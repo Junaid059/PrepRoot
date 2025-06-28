@@ -55,7 +55,7 @@ export default function Navbar() {
       href: '/instructors',
       icon: <GraduationCap className="h-4 w-4 mr-1" />,
     },
-    { name: 'About', href: '/about' },
+    { name: 'FAQs', href: '/faqs' },
     { name: 'Contact', href: '/contact' },
   ];
 

@@ -1,10 +1,11 @@
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect, useMemo, useCallback } from "react"
 import { useSearchParams } from "next/navigation"
 import { motion } from "framer-motion"
 import { Search, Filter, X } from "lucide-react"
 import CourseCard from "@/components/course-card"
+import { debounce } from "lodash"
 
 // Define TypeScript interfaces
 interface Instructor {
@@ -24,7 +25,24 @@ interface Course {
   instructor: Instructor | string;
   image?: string;
   createdAt: string;
-  // Add any other properties your course objects have
+}
+
+interface ApiResponse {
+  success: boolean;
+  courses: Course[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+  filters: {
+    search: string;
+    category: string;
+    level: string;
+    minPrice: number;
+    maxPrice: number;
+  };
 }
 
 export default function ExplorePage() {
@@ -39,27 +57,52 @@ export default function ExplorePage() {
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000])
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [sortBy, setSortBy] = useState("popular")
+  const [pagination, setPagination] = useState({
+    page: 1,
+    total: 0,
+    totalPages: 0
+  })
 
-  // Load all courses on component mount
+  // Debounced search function for better performance
+  const debouncedFetchCourses = useCallback(
+    debounce((query: string, category: string, minPrice: number, maxPrice: number) => {
+      fetchCourses(query, category, minPrice, maxPrice)
+    }, 500),
+    []
+  )
+
+  // Load courses when component mounts or filters change
   useEffect(() => {
-    fetchAllCourses()
-  }, [])
+    debouncedFetchCourses(searchQuery, selectedCategory, priceRange[0], priceRange[1])
+  }, [searchQuery, selectedCategory, priceRange, debouncedFetchCourses])
 
-  const fetchAllCourses = async () => {
+  const fetchCourses = async (
+    search: string = "",
+    category: string = "",
+    minPrice: number = 0,
+    maxPrice: number = 999999,
+    page: number = 1
+  ) => {
     setIsLoading(true)
     try {
-      // Build query parameters for fetching all courses
       const queryParams = new URLSearchParams({
-        limit: '100', // Fetch more courses or implement pagination
-        page: '1'
+        search,
+        category,
+        minPrice: minPrice.toString(),
+        maxPrice: maxPrice.toString(),
+        page: page.toString(),
+        limit: '50' // Increase limit to get more courses
       })
       
       const response = await fetch(`/api/courses?${queryParams}`)
       if (response.ok) {
-        const data = await response.json()
-        // Handle the response structure from your API
-        const coursesData = data.courses || []
-        setAllCourses(Array.isArray(coursesData) ? coursesData : [])
+        const data: ApiResponse = await response.json()
+        setAllCourses(data.courses || [])
+        setPagination({
+          page: data.pagination?.page || 1,
+          total: data.pagination?.total || 0,
+          totalPages: data.pagination?.totalPages || 0
+        })
       } else {
         console.log(`Failed to fetch courses: ${response.status} ${response.statusText}`)
         setAllCourses([])
@@ -75,63 +118,42 @@ export default function ExplorePage() {
   // Get unique categories from all courses dynamically
   const categories = useMemo(() => {
     const uniqueCategories = [...new Set(allCourses.map(course => course.category))]
-    return uniqueCategories.filter(Boolean) // Remove any empty/null categories
+    return uniqueCategories.filter(Boolean)
   }, [allCourses])
 
   // Calculate dynamic price range from all courses
   const maxCoursePrice = useMemo(() => {
-    return allCourses.length > 0 ? Math.max(...allCourses.map(course => course.price)) : 200
+    return allCourses.length > 0 ? Math.max(...allCourses.map(course => course.price)) : 1000
   }, [allCourses])
 
   // Update price range when courses are loaded
   useEffect(() => {
-    if (allCourses.length > 0 && priceRange[1] === 200) {
+    if (allCourses.length > 0 && priceRange[1] === 1000) {
       const maxPrice = Math.max(...allCourses.map(course => course.price))
       setPriceRange([0, maxPrice])
     }
   }, [allCourses, priceRange])
 
-  // Filter and sort courses using useMemo for performance
-  const filteredAndSortedCourses = useMemo(() => {
-    let filtered = allCourses.filter(course => {
-      // Get instructor name safely
-      const instructorName = typeof course.instructor === 'string' 
-        ? course.instructor 
-        : course.instructor?.name || ''
+  // Client-side sorting only (since filtering is done server-side)
+  const sortedCourses = useMemo(() => {
+    let sorted = [...allCourses]
 
-      // Search filter
-      const matchesSearch = !searchQuery || 
-        course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        course.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        instructorName.toLowerCase().includes(searchQuery.toLowerCase())
-
-      // Category filter
-      const matchesCategory = !selectedCategory || course.category === selectedCategory
-
-      // Price filter
-      const matchesPrice = course.price >= priceRange[0] && course.price <= priceRange[1]
-
-      return matchesSearch && matchesCategory && matchesPrice
-    })
-
-    // Sort courses
     switch (sortBy) {
       case "newest":
-        filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        sorted.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
         break
       case "price-low":
-        filtered.sort((a, b) => a.price - b.price)
+        sorted.sort((a, b) => a.price - b.price)
         break
       case "price-high":
-        filtered.sort((a, b) => b.price - a.price)
+        sorted.sort((a, b) => b.price - a.price)
         break
       case "rating":
-        filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0))
+        sorted.sort((a, b) => (b.rating || 0) - (a.rating || 0))
         break
       case "popular":
       default:
-        // Default sorting by rating, then by newest
-        filtered.sort((a, b) => {
+        sorted.sort((a, b) => {
           const ratingDiff = (b.rating || 0) - (a.rating || 0)
           if (ratingDiff === 0) {
             return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
@@ -141,12 +163,12 @@ export default function ExplorePage() {
         break
     }
 
-    return filtered
-  }, [allCourses, searchQuery, selectedCategory, priceRange, sortBy])
+    return sorted
+  }, [allCourses, sortBy])
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    // Search is handled automatically by useMemo
+    // Search is handled automatically by useEffect
   }
 
   const handleCategoryChange = (category: string) => {
@@ -166,8 +188,6 @@ export default function ExplorePage() {
     setSortBy("popular")
     setIsFilterOpen(false)
   }
-
-  // const categories = ["Web Development", "Data Science", "Business", "Design", "Marketing", "Photography"]
 
   return (
     <div className="min-h-screen bg-gray-50 pt-24 pb-16">
@@ -322,7 +342,7 @@ export default function ExplorePage() {
         <div>
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-bold text-gray-900">
-              {isLoading ? "Loading courses..." : `${filteredAndSortedCourses.length} Courses Found`}
+              {isLoading ? "Loading courses..." : `${pagination.total} Courses Found`}
             </h2>
             <div className="flex items-center">
               <label htmlFor="sort" className="text-sm text-gray-600 mr-2">
@@ -357,9 +377,9 @@ export default function ExplorePage() {
               ))}
             </div>
           ) : (
-            filteredAndSortedCourses.length > 0 ? (
+            sortedCourses.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {filteredAndSortedCourses.map((course, index) => (
+                {sortedCourses.map((course, index) => (
                   <CourseCard 
                     key={course._id || `course-${index}`} 
                     course={course} 

@@ -45,8 +45,8 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/about" className="text-gray-400 hover:text-teal-500 transition-colors">
-                  About Us
+                <Link href="/faqs" className="text-gray-400 hover:text-teal-500 transition-colors">
+                  FAQs
                 </Link>
               </li>
               <li>
@@ -54,11 +54,7 @@ export default function Footer() {
                   Contact
                 </Link>
               </li>
-              <li>
-                <Link href="/blog" className="text-gray-400 hover:text-teal-500 transition-colors">
-                  Blog
-                </Link>
-              </li>
+             
             </ul>
           </div>
 
