@@ -21,15 +21,40 @@ const LectureSchema = new mongoose.Schema(
       ref: 'Section',
       required: true,
     },
+    // Video fields
     videoUrl: {
       type: String,
-      required: [true, 'Please provide a video URL'],
+      required: false, // Made optional since we can have PDF-only lectures
     },
     duration: {
       type: String,
-      required: [true, 'Please provide the lecture duration'],
+      required: false, // Made optional for PDF lectures
+    },
+    // PDF fields - ADD THESE
+    fileUrl: {
+      type: String,
+      trim: true,
+    },
+    fileType: {
+      type: String,
+      trim: true,
+      enum: ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'txt'], // Allowed file types
+    },
+    fileName: {
+      type: String,
+      trim: true,
+    },
+    // Content type to determine what to display
+    contentType: {
+      type: String,
+      enum: ['video', 'document', 'both'],
+      default: 'video',
     },
     isFree: {
+      type: Boolean,
+      default: false,
+    },
+    isFreePreview: { // Add this field that your frontend expects
       type: Boolean,
       default: false,
     },
@@ -42,6 +67,15 @@ const LectureSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+// Add validation to ensure at least video or document is provided
+LectureSchema.pre('save', function(next) {
+  if (!this.videoUrl && !this.fileUrl) {
+    next(new Error('Lecture must have either a video URL or a file URL'));
+  } else {
+    next();
+  }
+});
 
 export default mongoose.models.Lecture ||
   mongoose.model('Lecture', LectureSchema);

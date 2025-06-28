@@ -1,225 +1,217 @@
-'use client';
+"use client"
 
-import type React from 'react';
-
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Trash2, Edit, Plus, X, BookOpen, Upload } from 'lucide-react';
-import { toast } from 'react-hot-toast';
+import type React from "react"
+import { useState, useEffect } from "react"
+import { motion } from "framer-motion"
+import { Trash2, Edit, Plus, X, BookOpen, Upload } from "lucide-react"
+import { toast } from "react-hot-toast"
 
 interface Course {
-  id: string;
-  title: string;
-  description: string;
-  price: number;
-  category: string;
-  instructorName: string;
-  thumbnail?: string | File;
-  sections?: number;
-  lectures?: number;
-  enrollments?: number;
-  revenue?: string;
-  trend?: number;
-  createdAt?: string;
+  id: string
+  title: string
+  description: string
+  price: number
+  category: string
+  instructorName: string
+  thumbnail?: string | File
+  sections?: number
+  lectures?: number
+  enrollments?: number
+  revenue?: string
+  trend?: number
+  createdAt?: string
 }
 
 interface Category {
-  name: string;
-  count: number;
-  icon: string;
+  name: string
+  count: number
+  icon: string
 }
 
 export default function CoursesPanel() {
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const [editingCourse, setEditingCourse] = useState<Course | null>(null);
-  const [isCreating, setIsCreating] = useState<boolean>(false);
+  const [courses, setCourses] = useState<Course[]>([])
+  const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [error, setError] = useState<string | null>(null)
+  const [searchTerm, setSearchTerm] = useState<string>("")
+  const [editingCourse, setEditingCourse] = useState<Course | null>(null)
+  const [isCreating, setIsCreating] = useState<boolean>(false)
   const [newCourse, setNewCourse] = useState<Course>({
-    id: '',
-    title: '',
-    description: '',
+    id: "",
+    title: "",
+    description: "",
     price: 0,
-    category: '',
-    instructorName: '',
-    thumbnail: '',
-  });
+    category: "",
+    instructorName: "",
+    thumbnail: "",
+  })
 
   // Add state for categories
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [categoriesLoading, setCategoriesLoading] = useState<boolean>(true);
+  const [categories, setCategories] = useState<Category[]>([])
+  const [categoriesLoading, setCategoriesLoading] = useState<boolean>(true)
 
   useEffect(() => {
-    fetchCourses();
-    fetchCategories();
-  }, []);
+    fetchCourses()
+    fetchCategories()
+  }, [])
 
   const fetchCategories = async () => {
     try {
-      setCategoriesLoading(true);
-      const response = await fetch('/api/categories');
-
+      setCategoriesLoading(true)
+      const response = await fetch("/api/categories")
       if (!response.ok) {
-        throw new Error(
-          `Failed to fetch categories: ${response.status} ${response.statusText}`
-        );
+        throw new Error(`Failed to fetch categories: ${response.status} ${response.statusText}`)
       }
-
-      const data = await response.json();
-      setCategories(data.categories || []);
+      const data = await response.json()
+      setCategories(data.categories || [])
     } catch (error) {
-      console.error('Error fetching categories:', error);
-      toast.error('Failed to load categories');
+      console.error("Error fetching categories:", error)
+      toast.error("Failed to load categories")
     } finally {
-      setCategoriesLoading(false);
+      setCategoriesLoading(false)
     }
-  };
+  }
 
   const fetchCourses = async () => {
-    setIsLoading(true);
-    setError(null);
+    setIsLoading(true)
+    setError(null)
     try {
-      const response = await fetch('/api/admin/courses');
-
+      const response = await fetch("/api/admin/courses")
       if (!response.ok) {
-        throw new Error(
-          `Failed to fetch courses: ${response.status} ${response.statusText}`
-        );
+        throw new Error(`Failed to fetch courses: ${response.status} ${response.statusText}`)
       }
-
-      const contentType = response.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
-        throw new Error('Courses API did not return JSON');
+      const contentType = response.headers.get("content-type")
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new Error("Courses API did not return JSON")
       }
-
-      const data = await response.json();
-      setCourses(data.courses || []);
+      const data = await response.json()
+      setCourses(data.courses || [])
     } catch (error) {
-      console.error('Error fetching courses:', error);
-      setError('Failed to load courses');
-      toast.error('Failed to load courses');
+      console.error("Error fetching courses:", error)
+      setError("Failed to load courses")
+      toast.error("Failed to load courses")
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   const handleDeleteCourse = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this course?')) return;
+    if (!confirm("Are you sure you want to delete this course?")) return
 
     try {
       const response = await fetch(`/api/admin/courses/${id}`, {
-        method: 'DELETE',
-      });
+        method: "DELETE",
+      })
 
-      if (!response.ok) throw new Error('Failed to delete course');
+      if (!response.ok) throw new Error("Failed to delete course")
 
-      toast.success('Course deleted successfully');
-      fetchCourses(); // Refresh the list
+      toast.success("Course deleted successfully")
+      fetchCourses() // Refresh the list
     } catch (error) {
-      console.error('Error deleting course:', error);
-      toast.error('Failed to delete course');
+      console.error("Error deleting course:", error)
+      toast.error("Failed to delete course")
     }
-  };
+  }
 
   const handleUpdateCourse = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editingCourse) return;
+    e.preventDefault()
+    if (!editingCourse) return
 
     try {
-      const formData = new FormData();
-      Object.keys(editingCourse).forEach((key) => {
-        if (
-          key !== 'thumbnail' ||
-          (key === 'thumbnail' && editingCourse.thumbnail instanceof File)
-        ) {
-          // @ts-ignore - We know these properties exist on the course object
-          formData.append(key, editingCourse[key]);
-        }
-      });
+      const formData = new FormData()
+
+      // Handle form data properly
+      formData.append("title", editingCourse.title)
+      formData.append("description", editingCourse.description)
+      formData.append("price", editingCourse.price.toString())
+      formData.append("category", editingCourse.category)
+      formData.append("instructorName", editingCourse.instructorName)
+
+      if (editingCourse.thumbnail instanceof File) {
+        formData.append("thumbnail", editingCourse.thumbnail)
+      }
 
       const response = await fetch(`/api/admin/courses/${editingCourse.id}`, {
-        method: 'PUT',
+        method: "PUT",
         body: formData,
-      });
+      })
 
-      if (!response.ok) throw new Error('Failed to update course');
+      if (!response.ok) throw new Error("Failed to update course")
 
-      toast.success('Course updated successfully');
-      setEditingCourse(null);
-      fetchCourses(); // Refresh the list
+      toast.success("Course updated successfully")
+      setEditingCourse(null)
+      fetchCourses() // Refresh the list
     } catch (error) {
-      console.error('Error updating course:', error);
-      toast.error('Failed to update course');
+      console.error("Error updating course:", error)
+      toast.error("Failed to update course")
     }
-  };
+  }
 
   const handleCreateCourse = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
 
     try {
-      const formData = new FormData();
-      Object.keys(newCourse).forEach((key) => {
-        // @ts-ignore - We know these properties exist on the course object
-        formData.append(key, newCourse[key]);
-      });
+      const formData = new FormData()
 
-      const response = await fetch('/api/admin/courses', {
-        method: 'POST',
+      // Handle form data properly
+      formData.append("title", newCourse.title)
+      formData.append("description", newCourse.description)
+      formData.append("price", newCourse.price.toString())
+      formData.append("category", newCourse.category)
+      formData.append("instructorName", newCourse.instructorName)
+
+      if (newCourse.thumbnail instanceof File) {
+        formData.append("thumbnail", newCourse.thumbnail)
+      }
+
+      const response = await fetch("/api/admin/courses", {
+        method: "POST",
         body: formData,
-      });
+      })
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to create course');
+        const errorData = await response.json()
+        throw new Error(errorData.error || "Failed to create course")
       }
 
-      toast.success('Course created successfully');
-      setIsCreating(false);
+      toast.success("Course created successfully")
+      setIsCreating(false)
       setNewCourse({
-        id: '',
-        title: '',
-        description: '',
+        id: "",
+        title: "",
+        description: "",
         price: 0,
-        category: '',
-        instructorName: '',
-        thumbnail: '',
-      });
-      fetchCourses(); // Refresh the list
+        category: "",
+        instructorName: "",
+        thumbnail: "",
+      })
+      fetchCourses() // Refresh the list
     } catch (error) {
-      console.error('Error creating course:', error);
-      toast.error(
-        error instanceof Error ? error.message : 'Failed to create course'
-      );
+      console.error("Error creating course:", error)
+      toast.error(error instanceof Error ? error.message : "Failed to create course")
     }
-  };
+  }
 
-  const handleThumbnailChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    isNew = false
-  ) => {
-    const file = e.target.files?.[0];
+  const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>, isNew = false) => {
+    const file = e.target.files?.[0]
     if (file) {
       if (isNew) {
-        setNewCourse({ ...newCourse, thumbnail: file });
+        setNewCourse({ ...newCourse, thumbnail: file })
       } else if (editingCourse) {
-        setEditingCourse({ ...editingCourse, thumbnail: file });
+        setEditingCourse({ ...editingCourse, thumbnail: file })
       }
     }
-  };
+  }
 
   const filteredCourses = courses.filter(
     (course) =>
-      course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      course.category.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+      course?.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      course?.category?.toLowerCase().includes(searchTerm.toLowerCase()),
+  )
 
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
-          Manage Courses
-        </h2>
+        <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Manage Courses</h2>
         <div className="flex items-center space-x-4">
           <div className="relative">
             <input
@@ -251,10 +243,7 @@ export default function CoursesPanel() {
       {isLoading ? (
         <div className="space-y-4">
           {[1, 2, 3, 4].map((i) => (
-            <div
-              key={i}
-              className="h-24 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"
-            ></div>
+            <div key={i} className="h-24 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
           ))}
         </div>
       ) : (
@@ -262,7 +251,7 @@ export default function CoursesPanel() {
           {filteredCourses.length > 0 ? (
             filteredCourses.map((course) => (
               <motion.div
-                key={course.id}
+                key={course?.id || Math.random()}
                 className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -271,14 +260,14 @@ export default function CoursesPanel() {
                 <div className="p-6">
                   <div className="flex flex-col md:flex-row md:items-center">
                     <div className="flex-shrink-0 w-full md:w-48 h-32 bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden mb-4 md:mb-0 md:mr-6">
-                      {course.thumbnail ? (
+                      {course?.thumbnail ? (
                         <img
                           src={
-                            typeof course.thumbnail === 'string'
+                            typeof course.thumbnail === "string"
                               ? course.thumbnail
                               : URL.createObjectURL(course.thumbnail)
                           }
-                          alt={course.title}
+                          alt={course?.title || "Course thumbnail"}
                           className="w-full h-full object-cover"
                         />
                       ) : (
@@ -287,38 +276,39 @@ export default function CoursesPanel() {
                         </div>
                       )}
                     </div>
+
                     <div className="flex-1">
                       <div className="flex justify-between items-start">
                         <div>
                           <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-2">
-                            {course.title}
+                            {course?.title || "Untitled Course"}
                           </h3>
                           <p className="text-gray-600 dark:text-gray-300 mb-2 line-clamp-2">
-                            {course.description}
+                            {course?.description || "No description available"}
                           </p>
                           <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-2">
                             <span className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-300 px-2 py-1 rounded-full text-xs mr-2">
-                              {course.category}
+                              {course?.category || "No category"}
                             </span>
-                            <span className="mr-2">
-                              {course.sections} sections
-                            </span>
-                            <span>{course.lectures} lectures</span>
+                            <span className="mr-2">{`${course?.sections || 0} sections`}</span>
+                            <span>{`${course?.lectures || 0} lectures`}</span>
                           </div>
                           <p className="text-sm text-gray-500 dark:text-gray-400">
-                            <span className="font-medium">Instructor:</span>{' '}
-                            {course.instructorName || 'Not assigned'}
+                            <span className="font-medium">{"Instructor:"}</span>{" "}
+                            {course?.instructorName || "Not assigned"}
                           </p>
                         </div>
+
                         <div className="text-right">
                           <p className="text-xl font-bold text-green-600 dark:text-green-400">
-                            PKR {course.price}
+                            {`PKR ${course?.price?.toLocaleString() || "0"}`}
                           </p>
                           <p className="text-sm text-gray-500 dark:text-gray-400">
-                            {course.enrollments} students
+                            {`${course?.enrollments || 0} students`}
                           </p>
                         </div>
                       </div>
+
                       <div className="flex justify-end mt-4">
                         <button
                           onClick={() => setEditingCourse(course)}
@@ -328,7 +318,7 @@ export default function CoursesPanel() {
                           Edit
                         </button>
                         <button
-                          onClick={() => handleDeleteCourse(course.id)}
+                          onClick={() => handleDeleteCourse(course?.id || "")}
                           className="flex items-center px-3 py-1 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-300 rounded-lg hover:bg-red-200 dark:hover:bg-red-800 transition-colors"
                         >
                           <Trash2 className="h-4 w-4 mr-1" />
@@ -341,9 +331,7 @@ export default function CoursesPanel() {
               </motion.div>
             ))
           ) : (
-            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-              No courses found
-            </div>
+            <div className="text-center py-8 text-gray-500 dark:text-gray-400">No courses found</div>
           )}
         </div>
       )}
@@ -358,9 +346,7 @@ export default function CoursesPanel() {
             transition={{ duration: 0.3 }}
           >
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold text-gray-800 dark:text-white">
-                Edit Course
-              </h3>
+              <h3 className="text-xl font-bold text-gray-800 dark:text-white">Edit Course</h3>
               <button
                 onClick={() => setEditingCourse(null)}
                 className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
@@ -372,12 +358,10 @@ export default function CoursesPanel() {
             <form onSubmit={handleUpdateCourse}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
-                  <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">
-                    Title
-                  </label>
+                  <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Title</label>
                   <input
                     type="text"
-                    value={editingCourse.title}
+                    value={editingCourse?.title || ""}
                     onChange={(e) =>
                       setEditingCourse({
                         ...editingCourse,
@@ -390,14 +374,12 @@ export default function CoursesPanel() {
                 </div>
 
                 <div>
-                  <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">
-                    Category
-                  </label>
+                  <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Category</label>
                   {categoriesLoading ? (
                     <div className="w-full h-10 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
                   ) : (
                     <select
-                      value={editingCourse.category}
+                      value={editingCourse?.category || ""}
                       onChange={(e) =>
                         setEditingCourse({
                           ...editingCourse,
@@ -412,8 +394,7 @@ export default function CoursesPanel() {
                       </option>
                       {categories.map((category) => (
                         <option key={category.name} value={category.name}>
-                          {category.icon} {category.name} ({category.count}{' '}
-                          courses)
+                          {`${category.icon} ${category.name} (${category.count} courses)`}
                         </option>
                       ))}
                     </select>
@@ -426,7 +407,7 @@ export default function CoursesPanel() {
                   </label>
                   <input
                     type="text"
-                    value={editingCourse.instructorName || ''}
+                    value={editingCourse?.instructorName || ""}
                     onChange={(e) =>
                       setEditingCourse({
                         ...editingCourse,
@@ -439,16 +420,14 @@ export default function CoursesPanel() {
                 </div>
 
                 <div>
-                  <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">
-                    Price (PKR)
-                  </label>
+                  <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Price (PKR)</label>
                   <input
                     type="number"
-                    value={editingCourse.price}
+                    value={editingCourse?.price || 0}
                     onChange={(e) =>
                       setEditingCourse({
                         ...editingCourse,
-                        price: Number.parseFloat(e.target.value),
+                        price: Number.parseFloat(e.target.value) || 0,
                       })
                     }
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-900 text-gray-800 dark:text-white"
@@ -459,9 +438,7 @@ export default function CoursesPanel() {
                 </div>
 
                 <div>
-                  <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">
-                    Thumbnail
-                  </label>
+                  <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Thumbnail</label>
                   <div className="flex items-center">
                     <label className="flex items-center px-4 py-2 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-300 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors cursor-pointer">
                       <Upload className="h-4 w-4 mr-2" />
@@ -473,32 +450,28 @@ export default function CoursesPanel() {
                         className="hidden"
                       />
                     </label>
-                    {editingCourse.thumbnail &&
-                      typeof editingCourse.thumbnail === 'string' && (
-                        <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
-                          Current: {editingCourse.thumbnail.split('/').pop()}
-                        </span>
-                      )}
-                  </div>
-                  {editingCourse.thumbnail &&
-                    typeof editingCourse.thumbnail === 'string' && (
-                      <div className="mt-2">
-                        <img
-                          src={editingCourse.thumbnail || '/placeholder.svg'}
-                          alt="Current thumbnail"
-                          className="h-20 w-auto mt-1 rounded-md"
-                        />
-                      </div>
+                    {editingCourse?.thumbnail && typeof editingCourse.thumbnail === "string" && (
+                      <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
+                        {`Current: ${editingCourse.thumbnail.split("/").pop()}`}
+                      </span>
                     )}
+                  </div>
+                  {editingCourse?.thumbnail && typeof editingCourse.thumbnail === "string" && (
+                    <div className="mt-2">
+                      <img
+                        src={editingCourse.thumbnail || "/placeholder.svg"}
+                        alt="Current thumbnail"
+                        className="h-20 w-auto mt-1 rounded-md"
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
 
               <div className="mb-4">
-                <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">
-                  Description
-                </label>
+                <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Description</label>
                 <textarea
-                  value={editingCourse.description}
+                  value={editingCourse?.description || ""}
                   onChange={(e) =>
                     setEditingCourse({
                       ...editingCourse,
@@ -541,9 +514,7 @@ export default function CoursesPanel() {
             transition={{ duration: 0.3 }}
           >
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold text-gray-800 dark:text-white">
-                Create New Course
-              </h3>
+              <h3 className="text-xl font-bold text-gray-800 dark:text-white">Create New Course</h3>
               <button
                 onClick={() => setIsCreating(false)}
                 className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
@@ -555,32 +526,24 @@ export default function CoursesPanel() {
             <form onSubmit={handleCreateCourse}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
-                  <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">
-                    Title
-                  </label>
+                  <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Title</label>
                   <input
                     type="text"
                     value={newCourse.title}
-                    onChange={(e) =>
-                      setNewCourse({ ...newCourse, title: e.target.value })
-                    }
+                    onChange={(e) => setNewCourse({ ...newCourse, title: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-900 text-gray-800 dark:text-white"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">
-                    Category
-                  </label>
+                  <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Category</label>
                   {categoriesLoading ? (
                     <div className="w-full h-10 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
                   ) : (
                     <select
                       value={newCourse.category}
-                      onChange={(e) =>
-                        setNewCourse({ ...newCourse, category: e.target.value })
-                      }
+                      onChange={(e) => setNewCourse({ ...newCourse, category: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-900 text-gray-800 dark:text-white"
                       required
                     >
@@ -589,8 +552,7 @@ export default function CoursesPanel() {
                       </option>
                       {categories.map((category) => (
                         <option key={category.name} value={category.name}>
-                          {category.icon} {category.name} ({category.count}{' '}
-                          courses)
+                          {`${category.icon} ${category.name} (${category.count} courses)`}
                         </option>
                       ))}
                     </select>
@@ -616,17 +578,14 @@ export default function CoursesPanel() {
                 </div>
 
                 <div>
-                  <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">
-                    Price (PKR)
-                  </label>
+                  <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Price (PKR)</label>
                   <input
                     type="number"
-                    value={newCourse.price === 0 ? '' : newCourse.price}
+                    value={newCourse.price === 0 ? "" : newCourse.price}
                     onChange={(e) =>
                       setNewCourse({
                         ...newCourse,
-                        price:
-                          e.target.value === '' ? 0 : Number(e.target.value),
+                        price: e.target.value === "" ? 0 : Number(e.target.value),
                       })
                     }
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-900 text-gray-800 dark:text-white"
@@ -638,9 +597,7 @@ export default function CoursesPanel() {
                 </div>
 
                 <div>
-                  <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">
-                    Thumbnail
-                  </label>
+                  <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Thumbnail</label>
                   <div className="flex items-center">
                     <label className="flex items-center px-4 py-2 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-300 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors cursor-pointer">
                       <Upload className="h-4 w-4 mr-2" />
@@ -654,7 +611,7 @@ export default function CoursesPanel() {
                     </label>
                     {newCourse.thumbnail instanceof File && (
                       <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
-                        Selected: {(newCourse.thumbnail as File).name}
+                        {`Selected: ${(newCourse.thumbnail as File).name}`}
                       </span>
                     )}
                   </div>
@@ -662,14 +619,10 @@ export default function CoursesPanel() {
               </div>
 
               <div className="mb-4">
-                <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">
-                  Description
-                </label>
+                <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Description</label>
                 <textarea
                   value={newCourse.description}
-                  onChange={(e) =>
-                    setNewCourse({ ...newCourse, description: e.target.value })
-                  }
+                  onChange={(e) => setNewCourse({ ...newCourse, description: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-900 text-gray-800 dark:text-white"
                   rows={4}
                   required
@@ -696,5 +649,5 @@ export default function CoursesPanel() {
         </div>
       )}
     </div>
-  );
+  )
 }

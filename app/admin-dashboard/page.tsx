@@ -348,7 +348,7 @@ function OverviewPanel({
     },
     {
       title: "Total Revenue",
-      value: `PKR ${stats.totalRevenue.toLocaleString()}`,
+      value: `USD ${stats.totalRevenue.toLocaleString()}`,
       icon: DollarSign,
       color: "bg-purple-500",
     },
@@ -1275,7 +1275,7 @@ function EnrollmentsPanel() {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600 dark:text-green-400">
-                      PKR {enrollment.amountPaid.toLocaleString()}
+                     USD {enrollment.amountPaid ? enrollment.amountPaid.toLocaleString() : 'N/A'}
                     </td>
                   </motion.tr>
                 ))}
