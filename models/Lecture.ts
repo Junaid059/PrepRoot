@@ -1,81 +1,58 @@
 import mongoose from 'mongoose';
 
-const LectureSchema = new mongoose.Schema(
-  {
-    title: {
-      type: String,
-      required: [true, 'Please provide a lecture title'],
-      trim: true,
-      maxlength: [100, 'Lecture title cannot be more than 100 characters'],
-    },
-    description: {
-      type: String,
-      trim: true,
-      maxlength: [
-        500,
-        'Lecture description cannot be more than 500 characters',
-      ],
-    },
-    sectionId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Section',
-      required: true,
-    },
-    // Video fields
-    videoUrl: {
-      type: String,
-      required: false, // Made optional since we can have PDF-only lectures
-    },
-    duration: {
-      type: String,
-      required: false, // Made optional for PDF lectures
-    },
-    // PDF fields - ADD THESE
-    fileUrl: {
-      type: String,
-      trim: true,
-    },
-    fileType: {
-      type: String,
-      trim: true,
-      enum: ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'txt'], // Allowed file types
-    },
-    fileName: {
-      type: String,
-      trim: true,
-    },
-    // Content type to determine what to display
-    contentType: {
-      type: String,
-      enum: ['video', 'document', 'both'],
-      default: 'video',
-    },
-    isFree: {
-      type: Boolean,
-      default: false,
-    },
-    isFreePreview: { // Add this field that your frontend expects
-      type: Boolean,
-      default: false,
-    },
-    order: {
-      type: Number,
-      default: 0,
-    },
+const LectureSchema = new mongoose.Schema({
+  title: {
+    type: String,
+    required: true,
+    trim: true,
   },
-  {
-    timestamps: true,
-  }
-);
+  description: {
+    type: String,
+    trim: true,
+  },
+  videoUrl: {
+    type: String,
+    trim: true,
+  },
+  pdfUrl: {
+    type: String,
+    trim: true,
+  },
+  resourceType: {
+    type: String,
+    enum: ['video', 'pdf'],
+    required: true,
+  },
+  duration: {
+    type: String, // Format: "10:30" or "1:20:45"
+  },
+  isFreePreview: {
+    type: Boolean,
+    default: false,
+  },
+  order: {
+    type: Number,
+    default: 1,
+  },
+  sectionId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Section',
+    required: true,
+  },
+}, {
+  timestamps: true,
+});
 
-// Add validation to ensure at least video or document is provided
+// Index for efficient querying
+LectureSchema.index({ sectionId: 1, order: 1 });
+
+// Ensure at least one URL is provided
 LectureSchema.pre('save', function(next) {
-  if (!this.videoUrl && !this.fileUrl) {
-    next(new Error('Lecture must have either a video URL or a file URL'));
+  if (!this.videoUrl && !this.pdfUrl) {
+    next(new Error('Either videoUrl or pdfUrl must be provided'));
   } else {
     next();
   }
 });
 
-export default mongoose.models.Lecture ||
-  mongoose.model('Lecture', LectureSchema);
+export default mongoose.models.Lecture || mongoose.model('Lecture', LectureSchema);

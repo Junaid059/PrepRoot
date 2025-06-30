@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect, useMemo, useCallback, useRef } from "react"
 import { useSearchParams } from "next/navigation"
 import { motion } from "framer-motion"
 import { Search, Filter, X } from "lucide-react"
@@ -24,7 +24,24 @@ interface Course {
   instructor: Instructor | string;
   image?: string;
   createdAt: string;
-  // Add any other properties your course objects have
+}
+
+interface ApiResponse {
+  success: boolean;
+  courses: Course[];
+  pagination?: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+  filters?: {
+    search: string;
+    category: string;
+    level: string;
+    minPrice: number;
+    maxPrice: number;
+  };
 }
 
 export default function ExplorePage() {
@@ -32,106 +49,156 @@ export default function ExplorePage() {
   const initialSearch = searchParams.get("search") || ""
   const initialCategory = searchParams.get("category") || ""
 
-  const [allCourses, setAllCourses] = useState<Course[]>([])
+  const [courses, setCourses] = useState<Course[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState(initialSearch)
   const [selectedCategory, setSelectedCategory] = useState(initialCategory)
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000])
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [sortBy, setSortBy] = useState("popular")
+  const [pagination, setPagination] = useState({
+    page: 1,
+    total: 0,
+    totalPages: 0
+  })
+  const [categories, setCategories] = useState<string[]>([])
+  const [maxPrice, setMaxPrice] = useState(1000)
 
-  // Load all courses on component mount
-  useEffect(() => {
-    fetchAllCourses()
-  }, [])
+  // Use refs to track the current values for debouncing
+  const debounceTimeout = useRef<NodeJS.Timeout | null>(null)
+  const isInitialRender = useRef(true)
 
-  const fetchAllCourses = async () => {
+  // Fetch courses function
+  const fetchCourses = useCallback(async (
+    search: string = "",
+    category: string = "",
+    minPrice: number = 0,
+    maxPrice: number = 999999,
+    page: number = 1
+  ) => {
     setIsLoading(true)
+    setError(null)
+    
     try {
-      // Build query parameters for fetching all courses
       const queryParams = new URLSearchParams({
-        limit: '100', // Fetch more courses or implement pagination
-        page: '1'
+        search: search.trim(),
+        category: category.trim(),
+        minPrice: minPrice.toString(),
+        maxPrice: maxPrice.toString(),
+        page: page.toString(),
+        limit: '50'
       })
       
-      const response = await fetch(`/api/courses?${queryParams}`)
-      if (response.ok) {
-        const data = await response.json()
-        // Handle the response structure from your API
-        const coursesData = data.courses || []
-        setAllCourses(Array.isArray(coursesData) ? coursesData : [])
+      // Clean up empty parameters
+      const cleanParams = new URLSearchParams()
+      queryParams.forEach((value, key) => {
+        if (value && value !== '' && value !== '0' && !(key === 'maxPrice' && value === '999999')) {
+          cleanParams.append(key, value)
+        }
+      })
+      
+      // Always include page and limit
+      if (!cleanParams.has('page')) cleanParams.append('page', '1')
+      if (!cleanParams.has('limit')) cleanParams.append('limit', '50')
+      
+      console.log('Fetching courses with params:', cleanParams.toString())
+      
+      const response = await fetch(`/api/courses/explore?${cleanParams.toString()}`)
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const data: ApiResponse = await response.json()
+      console.log('API Response:', data)
+      
+      if (data.success) {
+        setCourses(data.courses || [])
+        setPagination({
+          page: data.pagination?.page || 1,
+          total: data.pagination?.total || data.courses?.length || 0,
+          totalPages: data.pagination?.totalPages || 1
+        })
+
+        // Extract categories from courses if not provided by API
+        if (data.courses && data.courses.length > 0) {
+          const uniqueCategories = [...new Set(data.courses.map(course => course.category).filter(Boolean))]
+          setCategories(uniqueCategories)
+          
+          // Update max price based on courses only on initial load
+          if (isInitialRender.current) {
+            const courseMaxPrice = Math.max(...data.courses.map(course => course.price), 1000)
+            if (courseMaxPrice > 1000) {
+              setMaxPrice(courseMaxPrice)
+              setPriceRange([0, courseMaxPrice])
+            }
+            isInitialRender.current = false
+          }
+        }
       } else {
-        console.log(`Failed to fetch courses: ${response.status} ${response.statusText}`)
-        setAllCourses([])
+        console.error('API returned success: false', data)
+        setCourses([])
+        setPagination({ page: 1, total: 0, totalPages: 0 })
+        setError('Failed to load courses')
       }
     } catch (error) {
-      console.log("Error fetching courses:", error instanceof Error ? error.message : String(error))
-      setAllCourses([])
+      console.error("Error fetching courses:", error)
+      setCourses([])
+      setPagination({ page: 1, total: 0, totalPages: 0 })
+      setError(error instanceof Error ? error.message : 'Failed to load courses')
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [])
 
-  // Get unique categories from all courses dynamically
-  const categories = useMemo(() => {
-    const uniqueCategories = [...new Set(allCourses.map(course => course.category))]
-    return uniqueCategories.filter(Boolean) // Remove any empty/null categories
-  }, [allCourses])
-
-  // Calculate dynamic price range from all courses
-  const maxCoursePrice = useMemo(() => {
-    return allCourses.length > 0 ? Math.max(...allCourses.map(course => course.price)) : 200
-  }, [allCourses])
-
-  // Update price range when courses are loaded
+  // Debounced search effect
   useEffect(() => {
-    if (allCourses.length > 0 && priceRange[1] === 200) {
-      const maxPrice = Math.max(...allCourses.map(course => course.price))
-      setPriceRange([0, maxPrice])
+    // Clear existing timeout
+    if (debounceTimeout.current) {
+      clearTimeout(debounceTimeout.current)
     }
-  }, [allCourses, priceRange])
 
-  // Filter and sort courses using useMemo for performance
-  const filteredAndSortedCourses = useMemo(() => {
-    let filtered = allCourses.filter(course => {
-      // Get instructor name safely
-      const instructorName = typeof course.instructor === 'string' 
-        ? course.instructor 
-        : course.instructor?.name || ''
+    // Set new timeout
+    debounceTimeout.current = setTimeout(() => {
+      fetchCourses(searchQuery, selectedCategory, priceRange[0], priceRange[1], 1)
+    }, 500)
 
-      // Search filter
-      const matchesSearch = !searchQuery || 
-        course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        course.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        instructorName.toLowerCase().includes(searchQuery.toLowerCase())
+    // Cleanup function
+    return () => {
+      if (debounceTimeout.current) {
+        clearTimeout(debounceTimeout.current)
+      }
+    }
+  }, [searchQuery, selectedCategory, priceRange, fetchCourses])
 
-      // Category filter
-      const matchesCategory = !selectedCategory || course.category === selectedCategory
+  // Initial load
+  useEffect(() => {
+    fetchCourses(initialSearch, initialCategory)
+  }, [fetchCourses, initialSearch, initialCategory])
 
-      // Price filter
-      const matchesPrice = course.price >= priceRange[0] && course.price <= priceRange[1]
+  // Client-side sorting (since API handles filtering)
+  const sortedCourses = useMemo(() => {
+    if (!courses.length) return []
+    
+    let sorted = [...courses]
 
-      return matchesSearch && matchesCategory && matchesPrice
-    })
-
-    // Sort courses
     switch (sortBy) {
       case "newest":
-        filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        sorted.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
         break
       case "price-low":
-        filtered.sort((a, b) => a.price - b.price)
+        sorted.sort((a, b) => a.price - b.price)
         break
       case "price-high":
-        filtered.sort((a, b) => b.price - a.price)
+        sorted.sort((a, b) => b.price - a.price)
         break
       case "rating":
-        filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0))
+        sorted.sort((a, b) => (b.rating || 0) - (a.rating || 0))
         break
       case "popular":
       default:
-        // Default sorting by rating, then by newest
-        filtered.sort((a, b) => {
+        sorted.sort((a, b) => {
           const ratingDiff = (b.rating || 0) - (a.rating || 0)
           if (ratingDiff === 0) {
             return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
@@ -141,12 +208,12 @@ export default function ExplorePage() {
         break
     }
 
-    return filtered
-  }, [allCourses, searchQuery, selectedCategory, priceRange, sortBy])
+    return sorted
+  }, [courses, sortBy])
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    // Search is handled automatically by useMemo
+    // Search is handled automatically by useEffect
   }
 
   const handleCategoryChange = (category: string) => {
@@ -154,20 +221,35 @@ export default function ExplorePage() {
   }
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>, index: 0 | 1) => {
-    const newPriceRange = [...priceRange]
-    newPriceRange[index] = Number.parseInt(e.target.value)
-    setPriceRange(newPriceRange as [number, number])
+    const value = Number.parseInt(e.target.value) || 0
+    setPriceRange(prev => {
+      const newRange = [...prev] as [number, number]
+      newRange[index] = value
+      // Ensure min doesn't exceed max and vice versa
+      if (index === 0 && value > prev[1]) {
+        newRange[1] = value
+      } else if (index === 1 && value < prev[0]) {
+        newRange[0] = value
+      }
+      return newRange
+    })
   }
 
   const handleClearFilters = () => {
     setSearchQuery("")
     setSelectedCategory("")
-    setPriceRange([0, maxCoursePrice])
+    setPriceRange([0, maxPrice])
     setSortBy("popular")
     setIsFilterOpen(false)
+    setError(null)
   }
 
-  // const categories = ["Web Development", "Data Science", "Business", "Design", "Marketing", "Photography"]
+  const hasActiveFilters = searchQuery || selectedCategory || priceRange[0] > 0 || priceRange[1] < maxPrice
+
+  const handleRetry = () => {
+    setError(null)
+    fetchCourses(searchQuery, selectedCategory, priceRange[0], priceRange[1], 1)
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 pt-24 pb-16">
@@ -178,6 +260,21 @@ export default function ExplorePage() {
             Discover our wide range of courses to help you achieve your learning goals
           </p>
         </div>
+
+        {/* Error Message */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+            <div className="flex items-center justify-between">
+              <p className="text-red-700">{error}</p>
+              <button
+                onClick={handleRetry}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-colors"
+              >
+                Retry
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Search and Filter Bar */}
         <div className="bg-white rounded-xl shadow-md p-6 mb-8">
@@ -202,7 +299,7 @@ export default function ExplorePage() {
               >
                 <Filter className="h-5 w-5 mr-2" />
                 Filters
-                {(selectedCategory || priceRange[0] > 0 || priceRange[1] < maxCoursePrice) && (
+                {hasActiveFilters && (
                   <span className="ml-2 px-2 py-1 bg-teal-100 text-teal-800 text-xs rounded-full">
                     Active
                   </span>
@@ -235,21 +332,25 @@ export default function ExplorePage() {
                 {/* Categories */}
                 <div>
                   <h4 className="text-sm font-medium text-gray-700 mb-3">Categories</h4>
-                  <div className="space-y-2">
-                    {categories.map((category) => (
-                      <div key={category} className="flex items-center">
-                        <input
-                          type="checkbox"
-                          id={`category-${category}`}
-                          checked={selectedCategory === category}
-                          onChange={() => handleCategoryChange(category)}
-                          className="h-4 w-4 text-[#8B4513] focus:ring-[#8B4513] border-gray-300 rounded"
-                        />
-                        <label htmlFor={`category-${category}`} className="ml-2 text-sm text-gray-700">
-                          {category}
-                        </label>
-                      </div>
-                    ))}
+                  <div className="space-y-2 max-h-60 overflow-y-auto">
+                    {categories.length > 0 ? (
+                      categories.map((category) => (
+                        <div key={category} className="flex items-center">
+                          <input
+                            type="checkbox"
+                            id={`category-${category}`}
+                            checked={selectedCategory === category}
+                            onChange={() => handleCategoryChange(category)}
+                            className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
+                          />
+                          <label htmlFor={`category-${category}`} className="ml-2 text-sm text-gray-700">
+                            {category}
+                          </label>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-sm text-gray-500">No categories available</p>
+                    )}
                   </div>
                 </div>
 
@@ -265,7 +366,7 @@ export default function ExplorePage() {
                       <input
                         type="range"
                         min="0"
-                        max={maxCoursePrice}
+                        max={maxPrice}
                         step="10"
                         value={priceRange[0]}
                         onChange={(e) => handlePriceChange(e, 0)}
@@ -274,7 +375,7 @@ export default function ExplorePage() {
                       <input
                         type="range"
                         min="0"
-                        max={maxCoursePrice}
+                        max={maxPrice}
                         step="10"
                         value={priceRange[1]}
                         onChange={(e) => handlePriceChange(e, 1)}
@@ -304,7 +405,7 @@ export default function ExplorePage() {
                           type="number"
                           id="max-price"
                           min={priceRange[0]}
-                          max={maxCoursePrice}
+                          max={maxPrice}
                           value={priceRange[1]}
                           onChange={(e) => handlePriceChange(e, 1)}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
@@ -322,7 +423,7 @@ export default function ExplorePage() {
         <div>
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-bold text-gray-900">
-              {isLoading ? "Loading courses..." : `${filteredAndSortedCourses.length} Courses Found`}
+              {isLoading ? "Loading courses..." : `${pagination.total} Courses Found`}
             </h2>
             <div className="flex items-center">
               <label htmlFor="sort" className="text-sm text-gray-600 mr-2">
@@ -333,6 +434,7 @@ export default function ExplorePage() {
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
                 className="py-2 px-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                disabled={isLoading}
               >
                 <option value="popular">Most Popular</option>
                 <option value="newest">Newest</option>
@@ -356,10 +458,24 @@ export default function ExplorePage() {
                 </div>
               ))}
             </div>
+          ) : error ? (
+            <div className="text-center py-12">
+              <div className="mb-4">
+                <Search className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+                <p className="text-lg text-gray-600 mb-2">Failed to load courses</p>
+                <p className="text-sm text-gray-500">Please try again or check your connection.</p>
+              </div>
+              <button
+                onClick={handleRetry}
+                className="px-6 py-3 bg-teal-600 text-white rounded-lg font-medium hover:bg-teal-700 transition-colors"
+              >
+                Try Again
+              </button>
+            </div>
           ) : (
-            filteredAndSortedCourses.length > 0 ? (
+            sortedCourses.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {filteredAndSortedCourses.map((course, index) => (
+                {sortedCourses.map((course, index) => (
                   <CourseCard 
                     key={course._id || `course-${index}`} 
                     course={course} 
