@@ -3,6 +3,18 @@ import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db';
 import Section from '@/models/Section';
 import Lecture from '@/models/Lecture';
+import { isValidObjectId, Types } from 'mongoose';
+
+// Define the section type for better type safety
+interface SectionDoc {
+  _id: Types.ObjectId;
+  title: string;
+  description?: string;
+  order: number;
+  courseId: Types.ObjectId;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 export async function GET(
   request: Request,
@@ -13,7 +25,12 @@ export async function GET(
     
     const { id } = await params;
     
-    const section = await Section.findById(id).lean();
+    // Validate ObjectId format
+    if (!isValidObjectId(id)) {
+      return NextResponse.json({ error: 'Invalid section ID format' }, { status: 400 });
+    }
+    
+    const section = await Section.findById(id).lean() as SectionDoc | null;
     
     if (!section) {
       return NextResponse.json({ error: 'Section not found' }, { status: 404 });
@@ -21,18 +38,20 @@ export async function GET(
 
     const lectureCount = await Lecture.countDocuments({ sectionId: id });
 
- return NextResponse.json({ 
-  section: {
-    id: (section._id as string),
-    title: section.title,
-    description: section.description,
-    order: section.order,
-    courseId: section.courseId,
-    lectureCount,
-    createdAt: section.createdAt,
-  },
-});
-  } catch (error) {
+    return NextResponse.json({
+      section: {
+        id: section._id.toString(),
+        title: section.title,
+        description: section.description || '',
+        order: section.order,
+        courseId: section.courseId.toString(),
+        lectureCount,
+        createdAt: section.createdAt,
+        updatedAt: section.updatedAt,
+      },
+    });
+
+  } catch (error: unknown) {
     console.error('Error fetching section:', error);
     return NextResponse.json(
       { error: 'Failed to fetch section' },
@@ -49,17 +68,35 @@ export async function PUT(
     await connectDB();
     
     const { id } = await params;
-    const { title, description } = await request.json();
     
-    if (!title) {
-      return NextResponse.json({ error: 'Title is required' }, { status: 400 });
+    // Validate ObjectId format
+    if (!isValidObjectId(id)) {
+      return NextResponse.json({ error: 'Invalid section ID format' }, { status: 400 });
     }
+    
+    const body = await request.json();
+    const { title, description } = body;
+    
+    // Validation
+    if (!title || typeof title !== 'string' || title.trim() === '') {
+      return NextResponse.json({ error: 'Title is required and must be a non-empty string' }, { status: 400 });
+    }
+
+    // Validate description if provided
+    if (description !== undefined && typeof description !== 'string') {
+      return NextResponse.json({ error: 'Description must be a string' }, { status: 400 });
+    }
+
+    const updateData = {
+      title: title.trim(),
+      description: description?.trim() || '',
+    };
     
     const section = await Section.findByIdAndUpdate(
       id,
-      { title, description },
-      { new: true }
-    );
+      updateData,
+      { new: true, runValidators: true }
+    ) as SectionDoc | null;
     
     if (!section) {
       return NextResponse.json({ error: 'Section not found' }, { status: 404 });
@@ -71,16 +108,26 @@ export async function PUT(
       section: {
         id: section._id.toString(),
         title: section.title,
-        description: section.description,
+        description: section.description || '',
         order: section.order,
-        courseId: section.courseId,
+        courseId: section.courseId.toString(),
         lectureCount,
         createdAt: section.createdAt,
+        updatedAt: section.updatedAt,
       },
     });
 
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error updating section:', error);
+    
+    // Handle validation errors
+    if (error && typeof error === 'object' && 'name' in error && error.name === 'ValidationError') {
+      return NextResponse.json(
+        { error: 'Validation failed', details: (error as any).message },
+        { status: 400 }
+      );
+    }
+    
     return NextResponse.json(
       { error: 'Failed to update section' },
       { status: 500 }
@@ -97,19 +144,34 @@ export async function DELETE(
     
     const { id } = await params;
     
-    // First delete all lectures in this section
-    await Lecture.deleteMany({ sectionId: id });
+    // Validate ObjectId format
+    if (!isValidObjectId(id)) {
+      return NextResponse.json({ error: 'Invalid section ID format' }, { status: 400 });
+    }
     
-    // Then delete the section
-    const section = await Section.findByIdAndDelete(id);
+    // Get section info before deletion for response
+    const section = await Section.findById(id) as SectionDoc | null;
     
     if (!section) {
       return NextResponse.json({ error: 'Section not found' }, { status: 404 });
     }
-    
-    return NextResponse.json({ message: 'Section deleted successfully' });
 
-  } catch (error) {
+    // First delete all lectures in this section
+    const deletedLectures = await Lecture.deleteMany({ sectionId: id });
+    
+    // Then delete the section
+    await Section.findByIdAndDelete(id);
+    
+    return NextResponse.json({ 
+      message: 'Section deleted successfully',
+      deletedSection: {
+        id: section._id.toString(),
+        title: section.title,
+      },
+      deletedLecturesCount: deletedLectures.deletedCount || 0,
+    });
+
+  } catch (error: unknown) {
     console.error('Error deleting section:', error);
     return NextResponse.json(
       { error: 'Failed to delete section' },
