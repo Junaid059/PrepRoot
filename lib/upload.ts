@@ -157,3 +157,43 @@ export async function uploadCourseThumbnail(file: any): Promise<string> {
     ],
   });
 }
+
+// Generic file upload function that can be used for different file types
+export async function uploadFile(file: any, customFolder?: string): Promise<string> {
+  // Determine resource type based on MIME type
+  const isImage = file.type.startsWith('image/');
+  const isVideo = file.type.startsWith('video/');
+  const isPDF = file.type === 'application/pdf';
+  
+  try {
+    // Convert file to base64
+    const fileBuffer = await file.arrayBuffer();
+    const base64File = Buffer.from(fileBuffer).toString('base64');
+    const dataURI = `data:${file.type};base64,${base64File}`;
+    
+    // Set default folder based on file type
+    let folder = customFolder || 'lms/files';
+    
+    // Set resource type based on file type
+    let resourceType = 'auto';
+    if (isImage) resourceType = 'image';
+    if (isVideo) resourceType = 'video';
+    
+    // Upload to Cloudinary with appropriate settings
+    const result = await cloudinary.uploader.upload(dataURI, {
+      folder,
+      resource_type: resourceType,
+      ...(isImage && {
+        transformation: [
+          { width: 800, height: 800, crop: 'limit' },
+          { quality: 'auto', fetch_format: 'auto' },
+        ],
+      }),
+    });
+    
+    return result.secure_url;
+  } catch (error) {
+    console.error('Error uploading file to Cloudinary:', error);
+    throw new Error('Failed to upload file');
+  }
+}

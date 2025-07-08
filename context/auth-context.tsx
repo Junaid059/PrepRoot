@@ -9,6 +9,9 @@ type User = {
   name: string;
   email: string;
   isAdmin: boolean;
+  profileImage?: string;
+  firstName?: string;
+  lastName?: string;
 }
 
 type AuthContextType = {
@@ -17,6 +20,7 @@ type AuthContextType = {
   login: (email: string, password: string) => Promise<boolean>;
   register: (name: string, email: string, password: string, adminKey?: string | null) => Promise<boolean>;
   logout: () => Promise<boolean>;
+  updateUserData: (userData: Partial<User>) => void;
 }
 
 // Create the context with a default value that matches our type
@@ -157,8 +161,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  // Function to update user data in context
+  const updateUserData = (userData: Partial<User>) => {
+    if (!user) return
+    
+    setUser({
+      ...user,
+      ...userData
+    })
+  }
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout, updateUserData }}>
       {children}
     </AuthContext.Provider>
   )

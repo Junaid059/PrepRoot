@@ -1,7 +1,6 @@
 "use client"
 
-import type React from "react"
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import TeachersPanel from "@/components/admin/teachers-panel"
 import CoursesPanel from "@/components/admin/courses-panel"
@@ -122,20 +121,15 @@ interface Student {
 }
 
 interface CourseEnrollment {
-  enrollmentId?: string
+  id: string
   student: {
     id: string
     name: string
     email: string
-    profilePicture?: string
-    isActive?: boolean
   }
-  enrollment: {
-    enrolledAt: string
-    progress?: number
-    amountPaid?: number
-    paymentStatus?: string
-  }
+  enrolledAt: string
+  progress: number
+  amountPaid: number
 }
 
 interface Category {
@@ -165,28 +159,14 @@ export default function CompleteAdminDashboard() {
         const response = await fetch("/api/admin/stats")
 
         if (!response.ok) {
-          throw new Error(`Failed to fetch statistics: ${response.status} ${response.statusText}`)
-        }
-
-        const contentType = response.headers.get("content-type")
-        if (!contentType || !contentType.includes("application/json")) {
-          throw new Error("API did not return JSON")
+          throw new Error(`Failed to fetch stats: ${response.status}`)
         }
 
         const data = await response.json()
 
-        // Fetch teachers count separately to ensure it's included
+        // Add default value for totalTeachers if it's undefined
         if (data.totalTeachers === undefined) {
-          try {
-            const teachersResponse = await fetch("/api/admin/teachers")
-            if (teachersResponse.ok) {
-              const teachersData = await teachersResponse.json()
-              data.totalTeachers = teachersData.teachers?.length || 0
-            }
-          } catch (error) {
-            console.error("Error fetching teacher count:", error)
-            data.totalTeachers = 0
-          }
+          data.totalTeachers = 0
         }
 
         setStats(data)
@@ -229,24 +209,10 @@ export default function CompleteAdminDashboard() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            {tab === "teachers" ? (
-              <div className="flex items-center">
-                <GraduationCap className="h-4 w-4 mr-2" />
-                <span>Teachers</span>
-              </div>
-            ) : tab === "enrollments" ? (
-              <div className="flex items-center">
-                <UserPlus className="h-4 w-4 mr-2" />
-                <span>Enrollments</span>
-              </div>
-            ) : tab === "sections" ? (
-              <div className="flex items-center">
-                <Layers className="h-4 w-4 mr-2" />
-                <span>Sections</span>
-              </div>
-            ) : (
-              tab.charAt(0).toUpperCase() + tab.slice(1)
-            )}
+            {tab === "teachers" ? "Teachers" : 
+             tab === "enrollments" ? "Enrollments" : 
+             tab === "sections" ? "Sections" : 
+             tab.charAt(0).toUpperCase() + tab.slice(1)}
           </motion.button>
         ))}
       </div>
@@ -274,7 +240,7 @@ export default function CompleteAdminDashboard() {
 // Overview Panel Component with Dynamic Data
 function OverviewPanel({
   stats,
-  isLoading,
+  isLoading
 }: {
   stats: Stats
   isLoading: boolean
@@ -386,12 +352,12 @@ function OverviewPanel({
             transition={{ duration: 0.5, delay: index * 0.1 }}
           >
             <div className="flex items-center">
-              <div className={`${card.color} p-3 rounded-lg mr-4`}>
-                <card.icon className="h-6 w-6 text-white" />
+              <div className={`p-3 rounded-full ${card.color} mr-4`}>
+                {React.createElement(card.icon, { className: "h-6 w-6 text-white" })}
               </div>
               <div>
                 <p className="text-sm text-gray-500 dark:text-gray-400">{card.title}</p>
-                <p className="text-2xl font-bold text-gray-800 dark:text-white">{isLoading ? "..." : card.value}</p>
+                <p className="text-xl font-bold text-gray-800 dark:text-white">{card.value}</p>
               </div>
             </div>
           </motion.div>
@@ -409,31 +375,43 @@ function OverviewPanel({
             <CardContent>
               <div className="h-80 w-full">
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={revenueData.monthlyRevenue}>
-                    <CartesianGrid strokeDasharray="3 3" />
+                  <AreaChart
+                    data={revenueData.monthlyRevenue}
+                    margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                  >
+                    <defs>
+                      <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
+                        <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
+                      </linearGradient>
+                      <linearGradient id="colorEnrollments" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#82ca9d" stopOpacity={0.8} />
+                        <stop offset="95%" stopColor="#82ca9d" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
                     <XAxis dataKey="monthName" />
-                    <YAxis />
-                    <Tooltip
-                      formatter={(value, name) => [
-                        name === "revenue" ? `PKR ${value.toLocaleString()}` : value,
-                        name === "revenue" ? "Revenue" : "Enrollments",
-                      ]}
-                    />
+                    <YAxis yAxisId="left" orientation="left" stroke="#8884d8" />
+                    <YAxis yAxisId="right" orientation="right" stroke="#82ca9d" />
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <Tooltip />
+                    <Legend />
                     <Area
                       type="monotone"
                       dataKey="revenue"
-                      stackId="1"
                       stroke="#8884d8"
-                      fill="#8884d8"
-                      fillOpacity={0.6}
+                      fillOpacity={1}
+                      fill="url(#colorRevenue)"
+                      yAxisId="left"
+                      name="Revenue (USD)"
                     />
                     <Area
                       type="monotone"
                       dataKey="enrollments"
-                      stackId="2"
                       stroke="#82ca9d"
-                      fill="#82ca9d"
-                      fillOpacity={0.6}
+                      fillOpacity={1}
+                      fill="url(#colorEnrollments)"
+                      yAxisId="right"
+                      name="Enrollments"
                     />
                   </AreaChart>
                 </ResponsiveContainer>
@@ -454,7 +432,7 @@ function OverviewPanel({
 
           {isLoading ? (
             <div className="h-80 bg-gray-200 dark:bg-gray-700 rounded animate-pulse flex items-center justify-center">
-              <p className="text-gray-500 dark:text-gray-400">Loading chart data...</p>
+              <p className="text-gray-500 dark:text-gray-400">Loading data...</p>
             </div>
           ) : (
             <div className="h-80 w-full border border-gray-200 dark:border-gray-700 rounded-lg p-4">
@@ -464,18 +442,18 @@ function OverviewPanel({
                     data={overviewData}
                     cx="50%"
                     cy="50%"
-                    labelLine={true}
-                    outerRadius={100}
+                    labelLine={false}
+                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                    outerRadius={80}
                     fill="#8884d8"
                     dataKey="value"
-                    label={({ name, value }) => `${name}: ${value}`}
                   >
                     {overviewData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
                   <Tooltip formatter={(value) => [value, "Count"]} />
-                  <Legend layout="vertical" verticalAlign="middle" align="right" />
+                  <Legend />
                 </PieChart>
               </ResponsiveContainer>
             </div>
@@ -506,19 +484,18 @@ function OverviewPanel({
                     data={categoryData}
                     cx="50%"
                     cy="50%"
-                    labelLine={true}
-                    outerRadius={100}
+                    labelLine={false}
+                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                    outerRadius={80}
                     fill="#8884d8"
-                    nameKey="name"
                     dataKey="count"
-                    label={({ name, count }) => `${name}: ${count}`}
                   >
                     {categoryData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(value, name) => [`${value} courses`, name]} />
-                  <Legend layout="vertical" verticalAlign="middle" align="right" />
+                  <Tooltip formatter={(value) => [value, "Courses"]} />
+                  <Legend />
                 </PieChart>
               </ResponsiveContainer>
             </div>
@@ -891,7 +868,9 @@ function StudentsPanel() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center mr-3">
-                          <span className="text-blue-600 dark:text-blue-300 font-bold">{student.name.charAt(0)}</span>
+                          <span className="text-blue-600 dark:text-blue-300 text-sm font-bold">
+                            {student.name.charAt(0)}
+                          </span>
                         </div>
                         <div className="text-sm font-medium text-gray-900 dark:text-white">{student.name}</div>
                       </div>
@@ -1107,28 +1086,7 @@ function EnrollmentsPanel() {
       }
 
       const data = await response.json()
-      console.log("API Response:", data) // Debug log
-      
-      // Handle the nested structure from the API
-      const formattedEnrollments = (data.enrollments || []).map((item: any) => ({
-        enrollmentId: item.enrollmentId,
-        student: {
-          id: item.student.id,
-          name: item.student.name,
-          email: item.student.email,
-          profilePicture: item.student.profilePicture,
-          isActive: item.student.isActive
-        },
-        enrollment: {
-          enrolledAt: item.enrollment.enrolledAt,
-          progress: item.enrollment.progress || 0,
-          amountPaid: item.enrollment.amountPaid || 0,
-          paymentStatus: item.enrollment.paymentStatus || 'pending'
-        }
-      }))
-      
-      console.log("Formatted enrollments:", formattedEnrollments) // Debug log
-      setCourseEnrollments(formattedEnrollments)
+      setCourseEnrollments(data.enrollments || [])
     } catch (error) {
       console.error("Error fetching course enrollments:", error)
       setError("Failed to load course enrollments")
@@ -1258,12 +1216,18 @@ function EnrollmentsPanel() {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Enrolled Date
                   </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Progress
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Amount Paid
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                {courseEnrollments.map((enrollment, index) => (
+                {courseEnrollments.map((enrollment) => (
                   <motion.tr
-                    key={`${enrollment.enrollmentId || enrollment.student?.id || index}-${index}`}
+                    key={enrollment.id}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.3 }}
@@ -1273,19 +1237,33 @@ function EnrollmentsPanel() {
                       <div className="flex items-center">
                         <div className="h-10 w-10 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center mr-3">
                           <span className="text-green-600 dark:text-green-300 font-bold">
-                            {enrollment.student?.name?.charAt(0) || 'U'}
+                            {enrollment.student.name.charAt(0)}
                           </span>
                         </div>
                         <div className="text-sm font-medium text-gray-900 dark:text-white">
-                          {enrollment.student?.name || 'Unknown Student'}
+                          {enrollment.student.name}
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                      {enrollment.student?.email || 'No email'}
+                      {enrollment.student.email}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                      {enrollment.enrollment?.enrolledAt ? new Date(enrollment.enrollment.enrolledAt).toLocaleDateString() : 'Unknown date'}
+                      {new Date(enrollment.enrolledAt).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div className="w-16 bg-gray-200 rounded-full h-2 mr-2">
+                          <div
+                            className="bg-blue-600 h-2 rounded-full"
+                            style={{ width: `${enrollment.progress}%` }}
+                          ></div>
+                        </div>
+                        <span className="text-sm text-gray-500 dark:text-gray-400">{enrollment.progress}%</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600 dark:text-green-400">
+                      USD {enrollment.amountPaid ? enrollment.amountPaid.toLocaleString() : 'N/A'}
                     </td>
                   </motion.tr>
                 ))}

@@ -38,6 +38,11 @@ export async function GET(
           description: section.description,
           order: section.order,
           courseId: section.courseId,
+          // Add the file fields so they appear on the user side
+          fileUrl: section.fileUrl || null,
+          fileType: section.fileType || null,
+          fileName: section.fileName || null,
+          fileCategory: section.fileCategory || null,
           lectures: lectures.map(lecture => ({
             _id: (lecture._id as string),
             title: lecture.title,

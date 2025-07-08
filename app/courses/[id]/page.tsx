@@ -8,6 +8,8 @@ import { motion } from "framer-motion"
 import { toast } from "react-hot-toast"
 import { useAuth } from "@/context/auth-context"
 import PaymentSuccessNotification from "@/components/payment-success-notification"
+import PDFViewer from "@/components/pdf-viewer"
+import SimplePDFViewer from "@/components/simple-pdf-viewer"
 import {
   Star,
   Clock,
@@ -51,6 +53,10 @@ interface Section {
   description?: string
   lectures?: Lecture[]
   courseId?: string
+  fileUrl?: string
+  fileType?: string
+  fileName?: string
+  fileCategory?: string
 }
 
 interface Instructor {
@@ -462,20 +468,71 @@ export default function CoursePage() {
   }
 
   const handlePdfDownload = (lecture: Lecture) => {
-    if (!lecture.pdfUrl) return
+    if (!lecture.pdfUrl) {
+      toast.error("PDF URL is missing")
+      return
+    }
 
     if (!isEnrolled && !lecture.isFreePreview) {
       toast.error("Please enroll in this course to download this PDF")
       return
     }
 
-    const link = document.createElement("a")
-    link.href = lecture.pdfUrl
-    link.download = `${lecture.title}.pdf`
-    link.target = "_blank"
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+    // Show loading toast
+    const loadingToast = toast.loading("Starting download...")
+    
+    // Method 1: Using fetch to convert to blob and force PDF content type
+    fetch(lecture.pdfUrl)
+      .then(response => {
+        if (!response.ok) throw new Error("Failed to fetch PDF")
+        return response.blob()
+      })
+      .then(blob => {
+        // Create a blob with PDF MIME type
+        const pdfBlob = new Blob([blob], { type: 'application/pdf' })
+        const blobUrl = window.URL.createObjectURL(pdfBlob)
+        
+        // Create link element
+        const link = document.createElement("a")
+        link.href = blobUrl
+        link.download = `${lecture.title}.pdf`
+        
+        // Trigger download
+        document.body.appendChild(link)
+        link.click()
+        
+        // Cleanup
+        setTimeout(() => {
+          window.URL.revokeObjectURL(blobUrl)
+          document.body.removeChild(link)
+        }, 100)
+        
+        toast.dismiss(loadingToast)
+        toast.success("Download complete!")
+      })
+      .catch(error => {
+        console.error("Download error (Method 1):", error)
+        
+        // Fallback Method 2: Direct download
+        try {
+          const link = document.createElement("a")
+          // We've already checked that lecture.pdfUrl exists at the beginning of this function
+          link.href = lecture.pdfUrl as string
+          link.download = `${lecture.title}.pdf`
+          link.target = "_blank"  // Open in new tab as fallback
+          
+          document.body.appendChild(link)
+          link.click()
+          document.body.removeChild(link)
+          
+          toast.dismiss(loadingToast)
+          toast.success("Download started!")
+        } catch (error2) {
+          console.error("Download error (Method 2):", error2)
+          toast.dismiss(loadingToast)
+          toast.error("Download failed. Please try using 'Open in New Tab' and then save the PDF.")
+        }
+      })
   }
 
   const handleShare = (platform: string) => {
@@ -528,6 +585,16 @@ export default function CoursePage() {
     sections.forEach((section) => {
       total += section.lectures?.length || 0
     })
+    
+    // Don't show "0 lectures" if we have sections with resources but no lectures
+    if (total === 0) {
+      // Check if we have any section resources
+      const hasSectionResources = sections.some(section => section.fileUrl);
+      if (hasSectionResources) {
+        return ""; // Return empty string instead of 0
+      }
+    }
+    
     return total
   }
 
@@ -535,6 +602,10 @@ export default function CoursePage() {
     let videos = 0
     let pdfs = 0
     sections.forEach((section) => {
+      // Count section resources (always PDFs)
+      if (section.fileUrl) pdfs++
+      
+      // Count lecture resources
       section.lectures?.forEach((lecture) => {
         if (lecture.resourceType === "video") videos++
         else if (lecture.resourceType === "pdf") pdfs++
@@ -644,33 +715,30 @@ export default function CoursePage() {
               </div>
             </div>
           ) : (
-            <div className="w-full h-full bg-gray-100 flex flex-col">
-              <div className="flex justify-between items-center p-4 bg-white border-b">
-                <h3 className="font-medium text-gray-800">{selectedContent.title}</h3>
-                <div className="flex space-x-2">
-                  <button
-                    onClick={() => handlePdfDownload(selectedContent)}
-                    className="flex items-center px-3 py-1 bg-[#FF6B38] text-white rounded-md hover:bg-opacity-90 transition-colors text-sm"
-                  >
-                    <Download className="h-4 w-4 mr-1" />
-                    Download
-                  </button>
-                  <button
-                    onClick={() => window.open(selectedContent.pdfUrl, "_blank")}
-                    className="flex items-center px-3 py-1 bg-gray-600 text-white rounded-md hover:bg-opacity-90 transition-colors text-sm"
-                  >
-                    <ExternalLink className="h-4 w-4 mr-1" />
-                    Open
-                  </button>
-                </div>
-              </div>
-              <iframe
-                src={`${selectedContent.pdfUrl}#toolbar=0&navpanes=0&scrollbar=0`}
-                className="w-full flex-1"
-                title={selectedContent.title}
-                onContextMenu={(e) => e.preventDefault()}
-              ></iframe>
-            </div>
+            <>
+              {/* Use try-catch pattern with React ErrorBoundary concept */}
+              {(() => {
+                try {
+                  return (
+                    <PDFViewer 
+                      pdfUrl={selectedContent.pdfUrl}
+                      title={selectedContent.title}
+                      isEnrolled={isEnrolled}
+                      isFreePreview={selectedContent.isFreePreview}
+                    />
+                  );
+                } catch (error) {
+                  console.error("Error with PDF Viewer, using fallback:", error);
+                  // Fallback to simple viewer if the advanced one fails
+                  return (
+                    <SimplePDFViewer
+                      url={selectedContent.pdfUrl}
+                      title={selectedContent.title}
+                    />
+                  );
+                }
+              })()}
+            </>
           )}
         </div>
       )
@@ -774,8 +842,8 @@ export default function CoursePage() {
           <div className="p-4 border-b border-gray-200">
             <div className="flex justify-between text-sm text-gray-600 mb-2">
               <span>{sections.length} sections</span>
-              <span>{countTotalLectures()} lectures</span>
-              <span>{calculateTotalDuration()} total</span>
+              {countTotalLectures() && <span>{countTotalLectures()} lectures</span>}
+              {calculateTotalDuration() !== "0m" && <span>{calculateTotalDuration()} total</span>}
             </div>
           </div>
 
@@ -794,7 +862,14 @@ export default function CoursePage() {
                         <span className="font-medium text-left">{section.title}</span>
                       </div>
                       <div className="flex items-center">
-                        <span className="text-xs text-gray-500 mr-2">{section.lectures?.length || 0} lectures</span>
+                        <span className="text-xs text-gray-500 mr-2">
+                          {section.lectures && section.lectures.length > 0 && (
+                            <span>{section.lectures.length} lectures</span>
+                          )}
+                          {section.fileUrl && (
+                            <span>{section.lectures && section.lectures.length > 0 ? <span className="ml-1">• </span> : ""}1 resource</span>
+                          )}
+                        </span>
                         {expandedSections[sectionId] ? (
                           <ChevronUp className="h-5 w-5" />
                         ) : (
@@ -803,9 +878,65 @@ export default function CoursePage() {
                       </div>
                     </button>
 
-                    {expandedSections[sectionId] && section.lectures && (
+                    {expandedSections[sectionId] && (
                       <div className="bg-gray-50">
-                        {section.lectures?.map((lecture, lectureIndex) => (
+                        {/* Display section resources if available */}
+                        {section.fileUrl && (
+                          <div className="p-3 border-t border-gray-100 bg-blue-50">
+                            <button
+                              className={`flex items-center justify-between w-full hover:bg-blue-100 p-2 rounded transition-colors ${
+                                selectedContent?._id === `section-resource-${sectionId}` ? "bg-blue-100 border-l-4 border-l-blue-600 pl-1" : ""
+                              }`}
+                              onClick={() => {
+                                // Create virtual lecture object for section file
+                                // Make sure the fileUrl is present
+                                if (!section.fileUrl) {
+                                  toast.error("Resource URL is missing. Please contact support.")
+                                  return;
+                                }
+                                
+                                const sectionResource = {
+                                  _id: `section-resource-${sectionId}`,
+                                  title: section.fileName || `${section.title} Resource`,
+                                  description: `Resource for ${section.title}`,
+                                  resourceType: 'pdf' as const,  // Always treat section resources as PDFs
+                                  videoUrl: undefined,
+                                  pdfUrl: section.fileUrl,
+                                  isFreePreview: false
+                                };
+                                
+                                // Set the selected content
+                                setSelectedContent(sectionResource);
+                                
+                                // For mobile, close sidebar after selection
+                                if (isMobile) {
+                                  setShowSidebar(false);
+                                }
+                                
+                                // Send analytics or log that a PDF was viewed (optional)
+                                console.log(`PDF Resource viewed: ${sectionResource.title}`);
+                              }}
+                            >
+                              <div className="flex items-center">
+                                <FileText className="h-4 w-4 mr-2 text-blue-600" />
+                                <span className="text-sm font-medium text-blue-700 text-left">
+                                  {section.fileName || "PDF Resource"}
+                                </span>
+                              </div>
+                              <div className="flex items-center">
+                                {!isEnrolled && (
+                                  <Lock className="h-4 w-4 ml-auto text-gray-500" />
+                                )}
+                                <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded ml-2">
+                                  PDF
+                                </span>
+                              </div>
+                            </button>
+                          </div>
+                        )}
+                        
+                        {section.lectures && section.lectures.length > 0 && 
+                          section.lectures?.map((lecture, lectureIndex) => (
                           <button
                             key={lecture._id || `lecture-${lectureIndex}`}
                             className={`flex items-center justify-between w-full p-4 border-t border-gray-100 hover:bg-gray-100 transition-colors ${

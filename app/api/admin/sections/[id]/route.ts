@@ -12,6 +12,11 @@ interface SectionDoc {
   description?: string;
   order: number;
   courseId: Types.ObjectId;
+  fileUrl?: string;
+  fileType?: string;
+  fileName?: string;
+  fileCategory?: string;
+  cloudinaryPublicId?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -46,6 +51,10 @@ export async function GET(
         order: section.order,
         courseId: section.courseId.toString(),
         lectureCount,
+        fileUrl: section.fileUrl || null,
+        fileType: section.fileType || null,
+        fileName: section.fileName || null,
+        fileCategory: section.fileCategory || null,
         createdAt: section.createdAt,
         updatedAt: section.updatedAt,
       },
@@ -112,6 +121,10 @@ export async function PUT(
         order: section.order,
         courseId: section.courseId.toString(),
         lectureCount,
+        fileUrl: section.fileUrl || null,
+        fileType: section.fileType || null,
+        fileName: section.fileName || null,
+        fileCategory: section.fileCategory || null,
         createdAt: section.createdAt,
         updatedAt: section.updatedAt,
       },

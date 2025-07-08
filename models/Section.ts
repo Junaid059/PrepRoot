@@ -19,6 +19,27 @@ const SectionSchema = new mongoose.Schema({
     type: Number,
     default: 1,
   },
+  // File fields for section resources
+  fileUrl: {
+    type: String,
+    trim: true,
+  },
+  fileType: {
+    type: String,
+    trim: true,
+  },
+  fileName: {
+    type: String,
+    trim: true,
+  },
+  fileCategory: {
+    type: String,
+    trim: true,
+  },
+  cloudinaryPublicId: {
+    type: String,
+    trim: true,
+  }
 }, {
   timestamps: true,
 });

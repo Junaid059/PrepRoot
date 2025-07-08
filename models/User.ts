@@ -28,6 +28,20 @@ const UserSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    firstName: {
+      type: String,
+      trim: true,
+      maxlength: [50, "First name cannot be more than 50 characters"],
+    },
+    lastName: {
+      type: String,
+      trim: true,
+      maxlength: [50, "Last name cannot be more than 50 characters"],
+    },
+    profileImage: {
+      type: String,
+      default: "",
+    },
     avatar: {
       type: String,
       default: "",

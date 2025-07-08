@@ -1,0 +1,13 @@
+import { Loader2 } from "lucide-react"
+
+export default function Loading() {
+  return (
+    <div className="min-h-screen bg-gray-50 pt-24 pb-12 flex items-center justify-center">
+      <div className="text-center">
+        <div className="w-16 h-16 border-4 border-t-[#8B4513] border-gray-200 rounded-full animate-spin mx-auto mb-4"></div>
+        <h2 className="text-xl font-bold text-gray-800">Loading profile...</h2>
+        <p className="text-gray-600">Please wait while we retrieve your profile information</p>
+      </div>
+    </div>
+  )
+}

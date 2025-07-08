@@ -32,6 +32,12 @@ export default function Navbar() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+  
+  // Only hide the normal navbar on admin dashboard pages, but keep it for admin users on other pages
+  // Admin dashboard has its own navbar with profile options
+  if (pathname.startsWith('/admin-dashboard')) {
+    return null;
+  }
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -117,9 +123,19 @@ export default function Navbar() {
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
                   className="flex items-center space-x-2 focus:outline-none"
                 >
-                  <div className="w-10 h-10 rounded-full bg-[#F5DEB3] flex items-center justify-center text-[#8B4513] font-bold">
-                    {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
-                  </div>
+                  {user.profileImage ? (
+                    <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-[#F5DEB3]">
+                      <img 
+                        src={user.profileImage} 
+                        alt={user.name || "Profile"} 
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-[#F5DEB3] flex items-center justify-center text-[#8B4513] font-bold">
+                      {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                    </div>
+                  )}
                   <span className="hidden md:inline-block text-sm font-medium text-gray-700">
                     Welcome, {user.name || 'User'}
                   </span>
@@ -142,14 +158,19 @@ export default function Navbar() {
                         <User className="h-4 w-4 mr-2" />
                         My Profile
                       </Link>
-                      <Link
-                        href="/my-courses"
-                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        onClick={() => setIsProfileOpen(false)}
-                      >
-                        <BookOpen className="h-4 w-4 mr-2" />
-                        My Courses
-                      </Link>
+                      
+                      {/* Only show My Courses for regular users */}
+                      {!user.isAdmin && (
+                        <Link
+                          href="/my-courses"
+                          className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          onClick={() => setIsProfileOpen(false)}
+                        >
+                          <BookOpen className="h-4 w-4 mr-2" />
+                          My Courses
+                        </Link>
+                      )}
+                      
                       {user.isAdmin && (
                         <Link
                           href="/admin-dashboard"
