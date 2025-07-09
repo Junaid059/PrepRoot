@@ -9,22 +9,22 @@ export default function Footer() {
           {/* Company Info */}
           <div>
             <h3 className="text-2xl font-bold mb-4">
-              PRE<span className="text-[#8B4513]">PROOTS</span>
+              PRE<span className="text-[#3b82f6]">PROOTS</span>
             </h3>
             <p className="text-gray-400 mb-4">
               Empowering learners worldwide with high-quality, accessible & engaging education.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="text-gray-400 hover:text-[#8B4513] transition-colors">
+              <a href="#" className="text-gray-400 hover:text-[#3b82f6] transition-colors">
                 <Facebook className="h-5 w-5" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-[#8B4513] transition-colors">
+              <a href="#" className="text-gray-400 hover:text-[#3b82f6] transition-colors">
                 <Twitter className="h-5 w-5" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-[#8B4513] transition-colors">
+              <a href="#" className="text-gray-400 hover:text-[#3b82f6] transition-colors">
                 <Instagram className="h-5 w-5" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-[#8B4513] transition-colors">
+              <a href="#" className="text-gray-400 hover:text-[#3b82f6] transition-colors">
                 <Linkedin className="h-5 w-5" />
               </a>
             </div>
@@ -35,22 +35,22 @@ export default function Footer() {
             <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
             <ul className="space-y-2">
               <li>
-                <Link href="/" className="text-gray-400 hover:text-teal-500 transition-colors">
+                <Link href="/" className="text-gray-400 hover:text-blue-500 transition-colors">
                   Home
                 </Link>
               </li>
               <li>
-                <Link href="/explore" className="text-gray-400 hover:text-teal-500 transition-colors">
+                <Link href="/explore" className="text-gray-400 hover:text-blue-500 transition-colors">
                   Explore Courses
                 </Link>
               </li>
               <li>
-                <Link href="/faqs" className="text-gray-400 hover:text-teal-500 transition-colors">
+                <Link href="/faqs" className="text-gray-400 hover:text-blue-500 transition-colors">
                   FAQs
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="text-gray-400 hover:text-teal-500 transition-colors">
+                <Link href="/contact" className="text-gray-400 hover:text-blue-500 transition-colors">
                   Contact
                 </Link>
               </li>
@@ -65,7 +65,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/explore?category=Web%20Development"
-                  className="text-gray-400 hover:text-teal-500 transition-colors"
+                  className="text-gray-400 hover:text-blue-500 transition-colors"
                 >
                   Web Development
                 </Link>
@@ -73,25 +73,25 @@ export default function Footer() {
               <li>
                 <Link
                   href="/explore?category=Data%20Science"
-                  className="text-gray-400 hover:text-teal-500 transition-colors"
+                  className="text-gray-400 hover:text-blue-500 transition-colors"
                 >
                   Data Science
                 </Link>
               </li>
               <li>
-                <Link href="/explore?category=Business" className="text-gray-400 hover:text-teal-500 transition-colors">
+                <Link href="/explore?category=Business" className="text-gray-400 hover:text-blue-500 transition-colors">
                   Business
                 </Link>
               </li>
               <li>
-                <Link href="/explore?category=Design" className="text-gray-400 hover:text-teal-500 transition-colors">
+                <Link href="/explore?category=Design" className="text-gray-400 hover:text-blue-500 transition-colors">
                   Design
                 </Link>
               </li>
               <li>
                 <Link
                   href="/explore?category=Marketing"
-                  className="text-gray-400 hover:text-teal-500 transition-colors"
+                  className="text-gray-400 hover:text-blue-500 transition-colors"
                 >
                   Marketing
                 </Link>
@@ -104,15 +104,15 @@ export default function Footer() {
             <h4 className="text-lg font-semibold mb-4">Contact Us</h4>
             <ul className="space-y-3">
               <li className="flex items-start">
-                <MapPin className="h-5 w-5 text-[#8B4513] mr-2 mt-0.5" />
+                <MapPin className="h-5 w-5 text-[#3b82f6] mr-2 mt-0.5" />
                 <span className="text-gray-400">123 Education Street, Learning City, 10001</span>
               </li>
               <li className="flex items-center">
-                <Phone className="h-5 w-5 text-[#8B4513] mr-2" />
+                <Phone className="h-5 w-5 text-[#3b82f6] mr-2" />
                 <span className="text-gray-400">+1 (555) 123-4567</span>
               </li>
               <li className="flex items-center">
-                <Mail className="h-5 w-5 text-[#8B4513] mr-2" />
+                <Mail className="h-5 w-5 text-[#3b82f6] mr-2" />
                 <span className="text-gray-400">info@preproots.com</span>
               </li>
             </ul>
@@ -125,13 +125,13 @@ export default function Footer() {
               &copy; {new Date().getFullYear()} Preproots. All rights reserved.
             </p>
             <div className="flex space-x-6">
-              <Link href="/terms" className="text-gray-400 hover:text-teal-500 transition-colors text-sm">
+              <Link href="/terms" className="text-gray-400 hover:text-blue-500 transition-colors text-sm">
                 Terms of Service
               </Link>
-              <Link href="/privacy" className="text-gray-400 hover:text-teal-500 transition-colors text-sm">
+              <Link href="/privacy" className="text-gray-400 hover:text-blue-500 transition-colors text-sm">
                 Privacy Policy
               </Link>
-              <Link href="/cookies" className="text-gray-400 hover:text-teal-500 transition-colors text-sm">
+              <Link href="/cookies" className="text-gray-400 hover:text-blue-500 transition-colors text-sm">
                 Cookie Policy
               </Link>
             </div>

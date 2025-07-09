@@ -90,20 +90,45 @@ export default function ContactPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmitStatus('idle');
     
-    // Simulate form submission
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setSubmitStatus('success');
-      setFormData({ name: '', email: '', subject: '', message: '' });
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setSubmitStatus('success');
+        setFormData({ name: '', email: '', subject: '', message: '' });
+        
+        // Reset success message after 5 seconds
+        setTimeout(() => setSubmitStatus('idle'), 5000);
+      } else {
+        setSubmitStatus('error');
+        console.error('Form submission error:', data.message);
+        
+        // Reset error message after 5 seconds
+        setTimeout(() => setSubmitStatus('idle'), 5000);
+      }
+    } catch (error) {
+      console.error('Network error:', error);
+      setSubmitStatus('error');
       
-      // Reset success message after 5 seconds
+      // Reset error message after 5 seconds
       setTimeout(() => setSubmitStatus('idle'), 5000);
-    }, 2000);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-amber-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-sky-50">
       {/* Hero Section */}
       <div className="pt-32 pb-16 px-4">
         <div className="container mx-auto text-center">
@@ -112,9 +137,9 @@ export default function ContactPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <MessageCircle className="mx-auto h-16 w-16 text-[#8B4513] mb-6" />
+            <MessageCircle className="mx-auto h-16 w-16 text-blue-600 mb-6" />
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              Get in <span className="text-[#8B4513]">Touch</span>
+              Get in <span className="text-blue-600">Touch</span>
             </h1>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
               Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
@@ -137,18 +162,18 @@ export default function ContactPage() {
               >
                 <a
                   href={method.action}
-                  className="block bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-orange-100 hover:border-[#8B4513]/30 h-full"
+                  className="block bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-blue-100 hover:border-blue-600/30 h-full"
                 >
-                  <div className="text-[#8B4513] mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <div className="text-blue-600 mb-4 group-hover:scale-110 transition-transform duration-300">
                     {method.icon}
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-[#8B4513] transition-colors">
+                  <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
                     {method.title}
                   </h3>
                   <p className="text-gray-600 text-sm mb-3">
                     {method.description}
                   </p>
-                  <p className="text-[#8B4513] font-semibold">
+                  <p className="text-blue-600 font-semibold">
                     {method.contact}
                   </p>
                 </a>
@@ -165,9 +190,9 @@ export default function ContactPage() {
               transition={{ duration: 0.6, delay: 0.4 }}
               className="lg:col-span-2"
             >
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-orange-100">
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-blue-100">
                 <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-                  <Send className="h-6 w-6 text-[#8B4513] mr-3" />
+                  <Send className="h-6 w-6 text-blue-600 mr-3" />
                   Send us a Message
                 </h2>
 
@@ -175,10 +200,16 @@ export default function ContactPage() {
                   <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl flex items-center"
+                    className="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl"
                   >
-                    <CheckCircle className="h-5 w-5 text-green-600 mr-3" />
-                    <span className="text-green-800">Message sent successfully! We'll get back to you soon.</span>
+                    <div className="flex items-center mb-2">
+                      <CheckCircle className="h-5 w-5 text-green-600 mr-3" />
+                      <span className="text-green-800 font-medium">Message sent successfully!</span>
+                    </div>
+                    <p className="text-green-700 text-sm">
+                      Your message has been stored in our system and our admin team will review it. 
+                      We'll get back to you within 24 hours.
+                    </p>
                   </motion.div>
                 )}
 
@@ -207,7 +238,7 @@ export default function ContactPage() {
                           value={formData.name}
                           onChange={handleInputChange}
                           required
-                          className="w-full py-3 pl-12 pr-4 rounded-xl border-2 border-orange-200 focus:border-[#8B4513] focus:outline-none bg-white/50 transition-colors"
+                          className="w-full py-3 pl-12 pr-4 rounded-xl border-2 border-blue-200 focus:border-blue-600 focus:outline-none bg-white/50 transition-colors"
                           placeholder="Enter your full name"
                         />
                         <User className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -226,7 +257,7 @@ export default function ContactPage() {
                           value={formData.email}
                           onChange={handleInputChange}
                           required
-                          className="w-full py-3 pl-12 pr-4 rounded-xl border-2 border-orange-200 focus:border-[#8B4513] focus:outline-none bg-white/50 transition-colors"
+                          className="w-full py-3 pl-12 pr-4 rounded-xl border-2 border-blue-200 focus:border-blue-600 focus:outline-none bg-white/50 transition-colors"
                           placeholder="Enter your email address"
                         />
                         <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -245,7 +276,7 @@ export default function ContactPage() {
                       value={formData.subject}
                       onChange={handleInputChange}
                       required
-                      className="w-full py-3 px-4 rounded-xl border-2 border-orange-200 focus:border-[#8B4513] focus:outline-none bg-white/50 transition-colors"
+                      className="w-full py-3 px-4 rounded-xl border-2 border-blue-200 focus:border-blue-600 focus:outline-none bg-white/50 transition-colors"
                       placeholder="What's this about?"
                     />
                   </div>
@@ -261,17 +292,40 @@ export default function ContactPage() {
                       onChange={handleInputChange}
                       required
                       rows={6}
-                      className="w-full py-3 px-4 rounded-xl border-2 border-orange-200 focus:border-[#8B4513] focus:outline-none bg-white/50 transition-colors resize-none"
+                      className="w-full py-3 px-4 rounded-xl border-2 border-blue-200 focus:border-blue-600 focus:outline-none bg-white/50 transition-colors resize-none"
                       placeholder="Tell us more about your inquiry..."
                     />
                   </div>
+
+                  {/* Success/Error Messages */}
+                  {submitStatus === 'success' && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="flex items-center space-x-2 p-4 bg-green-100 border border-green-200 rounded-xl text-green-800"
+                    >
+                      <CheckCircle className="h-5 w-5" />
+                      <span>Thank you for contacting us! We'll get back to you within 24 hours.</span>
+                    </motion.div>
+                  )}
+
+                  {submitStatus === 'error' && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="flex items-center space-x-2 p-4 bg-red-100 border border-red-200 rounded-xl text-red-800"
+                    >
+                      <AlertCircle className="h-5 w-5" />
+                      <span>Something went wrong. Please try again later.</span>
+                    </motion.div>
+                  )}
 
                   <motion.button
                     type="submit"
                     disabled={isSubmitting}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="w-full py-4 bg-[#8B4513] text-white font-semibold rounded-xl hover:bg-[#6B3100] transition-colors duration-200 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full py-4 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors duration-200 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isSubmitting ? (
                       <>
@@ -297,9 +351,9 @@ export default function ContactPage() {
               className="space-y-6"
             >
               {/* Office Hours */}
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-orange-100">
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-blue-100">
                 <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
-                  <Clock className="h-6 w-6 text-[#8B4513] mr-3" />
+                  <Clock className="h-6 w-6 text-blue-600 mr-3" />
                   Office Hours
                 </h3>
                 <div className="space-y-3">
@@ -313,7 +367,7 @@ export default function ContactPage() {
               </div>
 
               {/* Social Media */}
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-orange-100">
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-blue-100">
                 <h3 className="text-xl font-bold text-gray-900 mb-4">
                   Follow Us
                 </h3>
@@ -325,7 +379,7 @@ export default function ContactPage() {
                     <a
                       key={index}
                       href={social.href}
-                      className="w-10 h-10 bg-[#8B4513]/10 rounded-full flex items-center justify-center text-[#8B4513] hover:bg-[#8B4513] hover:text-white transition-colors duration-200"
+                      className="w-10 h-10 bg-blue-600/10 rounded-full flex items-center justify-center text-blue-600 hover:bg-blue-600 hover:text-white transition-colors duration-200"
                       aria-label={social.label}
                     >
                       {social.icon}
@@ -335,14 +389,14 @@ export default function ContactPage() {
               </div>
 
               {/* Quick Support */}
-              <div className="bg-gradient-to-br from-[#8B4513] to-amber-700 rounded-2xl p-6 text-white">
+              <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-6 text-white">
                 <h3 className="text-xl font-bold mb-4">
                   Need Immediate Help?
                 </h3>
-                <p className="text-orange-100 mb-4">
+                <p className="text-blue-100 mb-4">
                   For urgent inquiries, our support team is available 24/7 via live chat.
                 </p>
-                <button className="w-full py-3 bg-white text-[#8B4513] font-semibold rounded-xl hover:bg-orange-50 transition-colors duration-200">
+                <button className="w-full py-3 bg-white text-blue-600 font-semibold rounded-xl hover:bg-blue-50 transition-colors duration-200">
                   Start Live Chat
                 </button>
               </div>
@@ -352,7 +406,7 @@ export default function ContactPage() {
       </div>
 
       {/* Map Section (Optional) */}
-      <div className="bg-gradient-to-r from-[#8B4513] to-amber-700 py-16">
+      <div className="bg-gradient-to-r from-blue-600 to-blue-700 py-16">
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -364,7 +418,7 @@ export default function ContactPage() {
             <h2 className="text-3xl font-bold text-white mb-4">
               Visit Our Campus
             </h2>
-            <p className="text-orange-100 text-lg mb-8 max-w-2xl mx-auto">
+            <p className="text-blue-100 text-lg mb-8 max-w-2xl mx-auto">
               Located in the heart of Learning City, our campus is easily accessible and equipped with modern facilities to support your educational journey.
             </p>
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 max-w-2xl mx-auto">

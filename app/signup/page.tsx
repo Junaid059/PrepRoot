@@ -69,7 +69,7 @@ export default function Signup() {
               className="flex items-center justify-center lg:justify-start mb-6"
             >
               <span className="text-2xl font-bold text-gray-900">
-                PRE<span className="text-[#FF6B38]">PROOTS</span>
+                PRE<span className="text-blue-600">PROOTS</span>
               </span>
             </Link>
             <h2 className="text-3xl font-bold text-gray-900 mb-2 text-center lg:text-left">
@@ -96,7 +96,7 @@ export default function Signup() {
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="appearance-none relative block w-full px-4 py-3 border border-gray-300 rounded-lg placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#FF6B38] focus:border-[#FF6B38] focus:z-10 sm:text-sm"
+                className="appearance-none relative block w-full px-4 py-3 border border-gray-300 rounded-lg placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 focus:z-10 sm:text-sm"
                 placeholder="Enter your full name"
               />
             </div>
@@ -116,7 +116,7 @@ export default function Signup() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="appearance-none relative block w-full px-4 py-3 border border-gray-300 rounded-lg placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#FF6B38] focus:border-[#FF6B38] focus:z-10 sm:text-sm"
+                className="appearance-none relative block w-full px-4 py-3 border border-gray-300 rounded-lg placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 focus:z-10 sm:text-sm"
                 placeholder="Enter your email"
               />
             </div>
@@ -137,7 +137,7 @@ export default function Signup() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="appearance-none relative block w-full px-4 py-3 border border-gray-300 rounded-lg placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#FF6B38] focus:border-[#FF6B38] focus:z-10 sm:text-sm"
+                  className="appearance-none relative block w-full px-4 py-3 border border-gray-300 rounded-lg placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 focus:z-10 sm:text-sm"
                   placeholder="Create a password"
                 />
                 <button
@@ -170,7 +170,7 @@ export default function Signup() {
                   required
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="appearance-none relative block w-full px-4 py-3 border border-gray-300 rounded-lg placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#FF6B38] focus:border-[#FF6B38] focus:z-10 sm:text-sm"
+                  className="appearance-none relative block w-full px-4 py-3 border border-gray-300 rounded-lg placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 focus:z-10 sm:text-sm"
                   placeholder="Confirm your password"
                 />
                 <button
@@ -194,7 +194,7 @@ export default function Signup() {
                 type="checkbox"
                 checked={isAdmin}
                 onChange={(e) => setIsAdmin(e.target.checked)}
-                className="h-4 w-4 text-[#FF6B38] focus:ring-[#FF6B38] border-gray-300 rounded"
+                className="h-4 w-4 text-blue-600 focus:ring-blue-600 border-gray-300 rounded"
               />
               <label
                 htmlFor="isAdmin"
@@ -218,7 +218,7 @@ export default function Signup() {
                   type="password"
                   value={adminKey}
                   onChange={(e) => setAdminKey(e.target.value)}
-                  className="appearance-none relative block w-full px-4 py-3 border border-gray-300 rounded-lg placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#FF6B38] focus:border-[#FF6B38] focus:z-10 sm:text-sm"
+                  className="appearance-none relative block w-full px-4 py-3 border border-gray-300 rounded-lg placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 focus:z-10 sm:text-sm"
                   placeholder="Enter admin key"
                   required={isAdmin}
                 />
@@ -228,7 +228,7 @@ export default function Signup() {
             <div className="pt-2">
               <motion.button
                 type="submit"
-                className="group relative w-full flex justify-center py-3 px-4 border border-transparent rounded-lg text-white bg-[#FF6B38] hover:bg-[#2BBEB4] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FF6B38] font-medium"
+                className="group relative w-full flex justify-center py-3 px-4 border border-transparent rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600 font-medium"
                 disabled={isLoading}
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.99 }}
@@ -243,7 +243,7 @@ export default function Signup() {
               Already have an account?{' '}
               <Link
                 href="/login"
-                className="font-medium text-[#FF6B38] hover:text-[#2BBEB4]"
+                className="font-medium text-blue-600 hover:text-blue-700"
               >
                 Sign in
               </Link>
@@ -252,8 +252,8 @@ export default function Signup() {
         </motion.div>
 
         {/* Right Side - Image */}
-        <div className="hidden lg:block lg:w-1/2 bg-[#FF6B38] relative">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#FF6B38] to-[#2BBEB4] opacity-90"></div>
+        <div className="hidden lg:block lg:w-1/2 bg-blue-600 relative">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-blue-500 opacity-90"></div>
           <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-12">
             <h3 className="text-3xl font-bold mb-6">
               Start Your Learning Journey Today

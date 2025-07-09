@@ -160,7 +160,7 @@ export default function MyCoursesPage() {
           <div className="flex items-center">
             <button
               onClick={() => router.back()}
-              className="flex items-center text-gray-600 hover:text-[#8B4513] mr-4"
+              className="flex items-center text-gray-600 hover:text-[#2563eb] mr-4"
             >
               <ArrowLeft className="h-4 w-4 mr-1" />
               Back
@@ -174,7 +174,7 @@ export default function MyCoursesPage() {
               placeholder="Search your courses..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full py-2 pl-10 pr-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#8B4513] focus:border-transparent"
+              className="w-full py-2 pl-10 pr-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#2563eb] focus:border-transparent"
             />
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
           </div>
@@ -182,7 +182,7 @@ export default function MyCoursesPage() {
         
         {loading ? (
           <div className="flex items-center justify-center py-16">
-            <div className="w-16 h-16 border-4 border-t-[#8B4513] border-gray-200 rounded-full animate-spin"></div>
+            <div className="w-16 h-16 border-4 border-t-[#2563eb] border-gray-200 rounded-full animate-spin"></div>
           </div>
         ) : filteredEnrollments.length === 0 ? (
           <div className="bg-white rounded-xl shadow-md p-8 text-center">
@@ -195,7 +195,7 @@ export default function MyCoursesPage() {
                 </p>
                 <button
                   onClick={() => setSearchQuery("")}
-                  className="px-4 py-2 bg-[#8B4513] text-white rounded-lg hover:bg-[#6B3100] transition-colors"
+                  className="px-4 py-2 bg-[#2563eb] text-white rounded-lg hover:bg-[#1d4ed8] transition-colors"
                 >
                   Clear Search
                 </button>
@@ -209,7 +209,7 @@ export default function MyCoursesPage() {
                 </p>
                 <Link
                   href="/explore"
-                  className="px-4 py-2 bg-[#8B4513] text-white rounded-lg hover:bg-[#6B3100] transition-colors inline-block"
+                  className="px-4 py-2 bg-[#2563eb] text-white rounded-lg hover:bg-[#1d4ed8] transition-colors inline-block"
                 >
                   Explore Courses
                 </Link>
@@ -247,7 +247,7 @@ export default function MyCoursesPage() {
                     </div>
                   )}
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-                    <span className="px-2 py-1 bg-[#8B4513]/90 text-white text-xs font-medium rounded">
+                    <span className="px-2 py-1 bg-[#2563eb]/90 text-white text-xs font-medium rounded">
                       {enrollment.course.category}
                     </span>
                   </div>
@@ -270,7 +270,7 @@ export default function MyCoursesPage() {
                   <div className="mb-4">
                     <div className="h-2 bg-gray-200 rounded-full">
                       <div
-                        className="h-2 bg-[#8B4513] rounded-full"
+                        className="h-2 bg-[#2563eb] rounded-full"
                         style={{ 
                           width: `${typeof enrollment.progress === 'number' ? 
                             Math.min(Math.max(enrollment.progress, 0), 100) : 0}%` 
@@ -288,7 +288,7 @@ export default function MyCoursesPage() {
                   
                   <Link
                     href={`/courses/${enrollment.course.id}`}
-                    className="flex items-center justify-center w-full py-2 bg-[#8B4513] text-white rounded-lg hover:bg-[#6B3100] transition-colors"
+                    className="flex items-center justify-center w-full py-2 bg-[#2563eb] text-white rounded-lg hover:bg-[#1d4ed8] transition-colors"
                   >
                     <BookOpen className="h-4 w-4 mr-2" />
                     Continue Learning

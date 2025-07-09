@@ -642,7 +642,7 @@ export default function CoursePage() {
                   <button
                     onClick={handleEnroll}
                     disabled={isProcessingPayment}
-                    className="mt-4 bg-[#FF6B38] text-white px-6 py-2 rounded-lg font-medium hover:bg-opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center mx-auto"
+                    className="mt-4 bg-[#2563eb] text-white px-6 py-2 rounded-lg font-medium hover:bg-opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center mx-auto"
                   >
                     {isProcessingPayment ? (
                       <>
@@ -694,7 +694,7 @@ export default function CoursePage() {
                   <button
                     onClick={handleEnroll}
                     disabled={isProcessingPayment}
-                    className="bg-[#FF6B38] text-white px-6 py-2 rounded-lg font-medium hover:bg-opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center mx-auto"
+                    className="bg-[#2563eb] text-white px-6 py-2 rounded-lg font-medium hover:bg-opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center mx-auto"
                   >
                     {isProcessingPayment ? (
                       <>
@@ -796,7 +796,7 @@ export default function CoursePage() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/explore"
-              className="bg-[#FF6B38] text-white px-6 py-3 rounded-full font-medium hover:bg-opacity-90 transition-all"
+              className="bg-[#3b82f6] text-white px-6 py-3 rounded-full font-medium hover:bg-opacity-90 transition-all"
             >
               Browse Courses
             </Link>
@@ -858,7 +858,7 @@ export default function CoursePage() {
                       onClick={() => toggleSection(section, index)}
                     >
                       <div className="flex items-center">
-                        <BookOpen className="h-5 w-5 mr-2 text-[#FF6B38]" />
+                        <BookOpen className="h-5 w-5 mr-2 text-[#3b82f6]" />
                         <span className="font-medium text-left">{section.title}</span>
                       </div>
                       <div className="flex items-center">
@@ -940,16 +940,16 @@ export default function CoursePage() {
                           <button
                             key={lecture._id || `lecture-${lectureIndex}`}
                             className={`flex items-center justify-between w-full p-4 border-t border-gray-100 hover:bg-gray-100 transition-colors ${
-                              selectedContent?._id === lecture._id ? "bg-gray-100 border-l-4 border-l-[#FF6B38]" : ""
+                              selectedContent?._id === lecture._id ? "bg-gray-100 border-l-4 border-l-[#3b82f6]" : ""
                             }`}
                             onClick={() => handleLectureClick(lecture)}
                           >
                             <div className="flex items-center">
                               {lecture.isFreePreview || isEnrolled ? (
                                 lecture.resourceType === "video" ? (
-                                  <Play className="h-4 w-4 mr-2 text-[#FF6B38]" />
+                                  <Play className="h-4 w-4 mr-2 text-[#3b82f6]" />
                                 ) : (
-                                  <FileText className="h-4 w-4 mr-2 text-[#FF6B38]" />
+                                  <FileText className="h-4 w-4 mr-2 text-[#3b82f6]" />
                                 )
                               ) : (
                                 <Lock className="h-4 w-4 mr-2 text-gray-400" />
@@ -1016,9 +1016,9 @@ export default function CoursePage() {
                 </div>
                 <div className="flex items-center space-x-2">
                   {selectedContent.resourceType === "video" ? (
-                    <Play className="h-5 w-5 text-[#FF6B38]" />
+                    <Play className="h-5 w-5 text-[#2563eb]" />
                   ) : (
-                    <FileText className="h-5 w-5 text-[#FF6B38]" />
+                    <FileText className="h-5 w-5 text-[#2563eb]" />
                   )}
                   <span className="text-sm text-gray-500 capitalize">{selectedContent.resourceType}</span>
                 </div>
@@ -1033,7 +1033,7 @@ export default function CoursePage() {
                 <button
                   className={`pb-4 font-medium ${
                     activeTab === "content"
-                      ? "border-b-2 border-[#FF6B38] text-[#FF6B38]"
+                      ? "border-b-2 border-[#2563eb] text-[#2563eb]"
                       : "text-gray-500 hover:text-gray-700"
                   }`}
                   onClick={() => setActiveTab("content")}
@@ -1043,7 +1043,7 @@ export default function CoursePage() {
                 <button
                   className={`pb-4 font-medium ${
                     activeTab === "reviews"
-                      ? "border-b-2 border-[#FF6B38] text-[#FF6B38]"
+                      ? "border-b-2 border-[#2563eb] text-[#2563eb]"
                       : "text-gray-500 hover:text-gray-700"
                   }`}
                   onClick={() => setActiveTab("reviews")}
@@ -1059,7 +1059,7 @@ export default function CoursePage() {
                   <h1 className="text-3xl font-bold text-gray-900 mb-4">{course.title}</h1>
 
                   <div className="flex flex-wrap items-center gap-4 mb-6">
-                    <span className="bg-[#FF6B38]/10 text-[#FF6B38] px-3 py-1 rounded-full text-sm font-medium">
+                    <span className="bg-[#2563eb]/10 text-[#2563eb] px-3 py-1 rounded-full text-sm font-medium">
                       {course.category}
                     </span>
                     <div className="flex items-center">
@@ -1120,7 +1120,7 @@ export default function CoursePage() {
                       <h2 className="text-xl font-bold mb-4">Instructor</h2>
                       <div className="flex items-start">
                         <div className="mr-4">
-                          <div className="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center text-[#FF6B38] font-bold text-xl">
+                          <div className="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center text-[#3b82f6] font-bold text-xl">
                             {course.instructorName?.charAt(0) || "I"}
                           </div>
                         </div>
@@ -1159,7 +1159,7 @@ export default function CoursePage() {
                   className="w-full h-48 object-cover"
                 />
                 {course.featured && (
-                  <div className="absolute top-4 left-4 bg-[#FF6B38] text-white px-2 py-1 rounded-md text-xs font-medium">
+                  <div className="absolute top-4 left-4 bg-[#3b82f6] text-white px-2 py-1 rounded-md text-xs font-medium">
                     BESTSELLER
                   </div>
                 )}
@@ -1186,7 +1186,7 @@ export default function CoursePage() {
                   <motion.button
                     onClick={handleEnroll}
                     disabled={isProcessingPayment}
-                    className="w-full bg-[#FF6B38] text-white py-3 rounded-lg font-medium mb-4 hover:bg-opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                    className="w-full bg-[#3b82f6] text-white py-3 rounded-lg font-medium mb-4 hover:bg-opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                     whileHover={{ scale: isProcessingPayment ? 1 : 1.02 }}
                     whileTap={{ scale: isProcessingPayment ? 1 : 0.98 }}
                   >
@@ -1237,28 +1237,28 @@ export default function CoursePage() {
                   <div className="flex space-x-3">
                     <button
                       onClick={() => handleShare("facebook")}
-                      className="p-2 rounded-full bg-gray-100 hover:bg-[#FF6B38]/10 text-gray-600 hover:text-[#FF6B38] transition-colors"
+                      className="p-2 rounded-full bg-gray-100 hover:bg-[#3b82f6]/10 text-gray-600 hover:text-[#3b82f6] transition-colors"
                       aria-label="Share on Facebook"
                     >
                       <Facebook className="h-5 w-5" />
                     </button>
                     <button
                       onClick={() => handleShare("twitter")}
-                      className="p-2 rounded-full bg-gray-100 hover:bg-[#FF6B38]/10 text-gray-600 hover:text-[#FF6B38] transition-colors"
+                      className="p-2 rounded-full bg-gray-100 hover:bg-[#3b82f6]/10 text-gray-600 hover:text-[#3b82f6] transition-colors"
                       aria-label="Share on Twitter"
                     >
                       <Twitter className="h-5 w-5" />
                     </button>
                     <button
                       onClick={() => handleShare("linkedin")}
-                      className="p-2 rounded-full bg-gray-100 hover:bg-[#FF6B38]/10 text-gray-600 hover:text-[#FF6B38] transition-colors"
+                      className="p-2 rounded-full bg-gray-100 hover:bg-[#3b82f6]/10 text-gray-600 hover:text-[#3b82f6] transition-colors"
                       aria-label="Share on LinkedIn"
                     >
                       <Linkedin className="h-5 w-5" />
                     </button>
                     <button
                       onClick={() => handleShare("email")}
-                      className="p-2 rounded-full bg-gray-100 hover:bg-[#FF6B38]/10 text-gray-600 hover:text-gray-600 transition-colors"
+                      className="p-2 rounded-full bg-gray-100 hover:bg-[#3b82f6]/10 text-gray-600 hover:text-gray-600 transition-colors"
                       aria-label="Share via Email"
                     >
                       <Mail className="h-5 w-5" />

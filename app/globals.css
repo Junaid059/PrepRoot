@@ -92,14 +92,14 @@ body {
   background: #f1f1f1;
 }
 
-/* Update the scrollbar colors to match the new brown theme */
+/* Update the scrollbar colors to match the new blue theme */
 ::-webkit-scrollbar-thumb {
-  background: #8b4513;
+  background: #2563eb;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #6b3100;
+  background: #1d4ed8;
 }
 
 /* Range slider styling */
@@ -119,7 +119,7 @@ input[type="range"]::-webkit-slider-thumb {
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: #8b4513;
+  background: #2563eb;
   cursor: pointer;
   border: 2px solid white;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -129,7 +129,7 @@ input[type="range"]::-moz-range-thumb {
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: #8b4513;
+  background: #2563eb;
   cursor: pointer;
   border: 2px solid white;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);

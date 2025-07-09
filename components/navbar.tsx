@@ -79,7 +79,7 @@ export default function Navbar() {
           {/* Logo */}
           <Link href="/" className="flex items-center">
             <span className="text-2xl font-bold text-gray-900">
-              PRE<span className="text-[#8B4513]">PROOTS</span>
+              PRE<span className="text-[#2563eb]">PROOTS</span>
             </span>
           </Link>
 
@@ -89,8 +89,8 @@ export default function Navbar() {
               <Link
                 key={link.name}
                 href={link.href}
-                className={`text-sm font-medium transition-colors hover:text-[#8B4513] ${
-                  pathname === link.href ? 'text-[#8B4513]' : 'text-gray-700'
+                className={`text-sm font-medium transition-colors hover:text-[#2563eb] ${
+                  pathname === link.href ? 'text-[#2563eb]' : 'text-gray-700'
                 } ${link.icon ? 'flex items-center' : ''}`}
               >
                 {link.icon}
@@ -111,7 +111,7 @@ export default function Navbar() {
                   placeholder="Search courses..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="py-2 pl-10 pr-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#8B4513] focus:border-transparent"
+                  className="py-2 pl-10 pr-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#2563eb] focus:border-transparent"
                 />
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
               </form>
@@ -124,7 +124,7 @@ export default function Navbar() {
                   className="flex items-center space-x-2 focus:outline-none"
                 >
                   {user.profileImage ? (
-                    <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-[#F5DEB3]">
+                    <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-[#bfdbfe]">
                       <img 
                         src={user.profileImage} 
                         alt={user.name || "Profile"} 
@@ -132,7 +132,7 @@ export default function Navbar() {
                       />
                     </div>
                   ) : (
-                    <div className="w-10 h-10 rounded-full bg-[#F5DEB3] flex items-center justify-center text-[#8B4513] font-bold">
+                    <div className="w-10 h-10 rounded-full bg-[#bfdbfe] flex items-center justify-center text-[#2563eb] font-bold">
                       {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
                     </div>
                   )}
@@ -196,13 +196,13 @@ export default function Navbar() {
               <div className="hidden md:flex items-center space-x-4">
                 <Link
                   href="/login"
-                  className="text-sm font-medium text-gray-700 hover:text-[#8B4513] transition-colors"
+                  className="text-sm font-medium text-gray-700 hover:text-[#2563eb] transition-colors"
                 >
                   Login
                 </Link>
                 <Link
                   href="/signup"
-                  className="px-4 py-2 bg-[#8B4513] text-white rounded-full text-sm font-medium hover:bg-[#6B3100] transition-colors"
+                  className="px-4 py-2 bg-[#2563eb] text-white rounded-full text-sm font-medium hover:bg-[#1d4ed8] transition-colors"
                 >
                   Sign Up
                 </Link>
@@ -243,7 +243,7 @@ export default function Navbar() {
                       placeholder="Search courses..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full py-2 pl-10 pr-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#8B4513] focus:border-transparent"
+                      className="w-full py-2 pl-10 pr-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#2563eb] focus:border-transparent"
                     />
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                   </div>
@@ -255,9 +255,9 @@ export default function Navbar() {
                   <Link
                     key={link.name}
                     href={link.href}
-                    className={`text-sm font-medium transition-colors hover:text-[#8B4513] ${
+                    className={`text-sm font-medium transition-colors hover:text-[#2563eb] ${
                       pathname === link.href
-                        ? 'text-[#8B4513]'
+                        ? 'text-[#2563eb]'
                         : 'text-gray-700'
                     } ${link.icon ? 'flex items-center' : ''}`}
                     onClick={() => setIsMobileMenuOpen(false)}
@@ -271,14 +271,14 @@ export default function Navbar() {
                   <>
                     <Link
                       href="/login"
-                      className="text-sm font-medium text-gray-700 hover:text-[#8B4513] transition-colors"
+                      className="text-sm font-medium text-gray-700 hover:text-[#2563eb] transition-colors"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Login
                     </Link>
                     <Link
                       href="/signup"
-                      className="px-4 py-2 bg-[#8B4513] text-white rounded-full text-sm font-medium hover:bg-[#6B3100] transition-colors inline-block text-center"
+                      className="px-4 py-2 bg-[#2563eb] text-white rounded-full text-sm font-medium hover:bg-[#1d4ed8] transition-colors inline-block text-center"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Sign Up

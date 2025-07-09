@@ -41,8 +41,8 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl w-full flex rounded-2xl overflow-hidden shadow-xl">
         {/* Left Side - Image */}
-        <div className="hidden md:block md:w-1/2 bg-[#FF6B38] relative">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#FF6B38] to-[#2BBEB4] opacity-90"></div>
+        <div className="hidden md:block md:w-1/2 bg-blue-600 relative">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-blue-500 opacity-90"></div>
           <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-12">
             <h3 className="text-3xl font-bold mb-6">Welcome Back!</h3>
             <p className="text-lg text-center mb-8">
@@ -74,7 +74,7 @@ export default function Login() {
               className="flex items-center justify-center md:justify-start mb-6"
             >
               <span className="text-2xl font-bold text-gray-900">
-                PRE<span className="text-[#FF6B38]">PROOTS</span>
+                PRE<span className="text-blue-600">PROOTS</span>
               </span>
             </Link>
             <h2 className="text-3xl font-bold text-gray-900 mb-2 text-center md:text-left">
@@ -101,7 +101,7 @@ export default function Login() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="appearance-none relative block w-full px-4 py-3 border border-gray-300 rounded-lg placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#FF6B38] focus:border-[#FF6B38] focus:z-10 sm:text-sm"
+                className="appearance-none relative block w-full px-4 py-3 border border-gray-300 rounded-lg placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 focus:z-10 sm:text-sm"
                 placeholder="Enter your email"
               />
             </div>
@@ -122,7 +122,7 @@ export default function Login() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="appearance-none relative block w-full px-4 py-3 border border-gray-300 rounded-lg placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#FF6B38] focus:border-[#FF6B38] focus:z-10 sm:text-sm"
+                  className="appearance-none relative block w-full px-4 py-3 border border-gray-300 rounded-lg placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 focus:z-10 sm:text-sm"
                   placeholder="Enter your password"
                 />
                 <button
@@ -145,7 +145,7 @@ export default function Login() {
                   id="remember-me"
                   name="remember-me"
                   type="checkbox"
-                  className="h-4 w-4 text-[#FF6B38] focus:ring-[#FF6B38] border-gray-300 rounded"
+                  className="h-4 w-4 text-blue-600 focus:ring-blue-600 border-gray-300 rounded"
                 />
                 <label
                   htmlFor="remember-me"
@@ -158,7 +158,7 @@ export default function Login() {
               <div className="text-sm">
                 <Link
                   href="/forgot-password"
-                  className="font-medium text-[#FF6B38] hover:text-[#2BBEB4]"
+                  className="font-medium text-blue-600 hover:text-blue-700"
                 >
                   Forgot your password?
                 </Link>
@@ -168,7 +168,7 @@ export default function Login() {
             <div>
               <motion.button
                 type="submit"
-                className="group relative w-full flex justify-center py-3 px-4 border border-transparent rounded-lg text-white bg-[#FF6B38] hover:bg-[#2BBEB4] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FF6B38] font-medium"
+                className="group relative w-full flex justify-center py-3 px-4 border border-transparent rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600 font-medium"
                 disabled={isLoading}
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.99 }}
@@ -183,7 +183,7 @@ export default function Login() {
               Don&apos;t have an account?{' '}
               <Link
                 href="/signup"
-                className="font-medium text-[#FF6B38] hover:text-[#2BBEB4]"
+                className="font-medium text-blue-600 hover:text-blue-700"
               >
                 Sign up
               </Link>

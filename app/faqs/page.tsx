@@ -91,7 +91,7 @@ export default function FAQPage() {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-amber-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100">
       {/* Hero Section */}
       <div className="pt-32 pb-16 px-4">
         <div className="container mx-auto text-center">
@@ -100,9 +100,9 @@ export default function FAQPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <HelpCircle className="mx-auto h-16 w-16 text-[#8B4513] mb-6" />
+            <HelpCircle className="mx-auto h-16 w-16 text-blue-600 mb-6" />
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              Frequently Asked <span className="text-[#8B4513]">Questions</span>
+              Frequently Asked <span className="text-blue-600">Questions</span>
             </h1>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
               Find answers to common questions about our courses, payments, and platform
@@ -122,7 +122,7 @@ export default function FAQPage() {
                 placeholder="Search FAQs..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full py-4 pl-12 pr-6 text-lg rounded-2xl border-2 border-orange-200 focus:border-[#8B4513] focus:outline-none bg-white/80 backdrop-blur-sm shadow-lg"
+                className="w-full py-4 pl-12 pr-6 text-lg rounded-2xl border-2 border-blue-200 focus:border-blue-600 focus:outline-none bg-white/80 backdrop-blur-sm shadow-lg"
               />
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-6 w-6 text-gray-400" />
             </div>
@@ -141,8 +141,8 @@ export default function FAQPage() {
                 onClick={() => setActiveCategory(category)}
                 className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${
                   activeCategory === category
-                    ? 'bg-[#8B4513] text-white shadow-lg transform scale-105'
-                    : 'bg-white/80 text-gray-700 hover:bg-orange-100 border border-orange-200'
+                    ? 'bg-blue-600 text-white shadow-lg transform scale-105'
+                    : 'bg-white/80 text-gray-700 hover:bg-blue-100 border border-blue-200'
                 }`}
               >
                 {category}
@@ -166,18 +166,18 @@ export default function FAQPage() {
                   transition={{ duration: 0.3, delay: index * 0.1 }}
                   className="group"
                 >
-                  <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-orange-100 overflow-hidden">
+                  <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-blue-100 overflow-hidden">
                     <button
                       onClick={() => toggleItem(faq.id)}
-                      className="w-full p-6 text-left flex items-center justify-between hover:bg-orange-50/50 transition-colors duration-200"
+                      className="w-full p-6 text-left flex items-center justify-between hover:bg-blue-50 transition-colors duration-200"
                     >
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
-                          <span className="px-3 py-1 bg-[#8B4513]/10 text-[#8B4513] text-sm font-medium rounded-full">
+                          <span className="px-3 py-1 bg-blue-100 text-blue-600 text-sm font-medium rounded-full">
                             {faq.category}
                           </span>
                         </div>
-                        <h3 className="text-lg font-semibold text-gray-900 group-hover:text-[#8B4513] transition-colors">
+                        <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
                           {faq.question}
                         </h3>
                       </div>
@@ -186,7 +186,7 @@ export default function FAQPage() {
                         transition={{ duration: 0.3 }}
                         className="ml-4 flex-shrink-0"
                       >
-                        <ChevronDown className="h-6 w-6 text-[#8B4513]" />
+                        <ChevronDown className="h-6 w-6 text-blue-600" />
                       </motion.div>
                     </button>
                     
@@ -200,7 +200,7 @@ export default function FAQPage() {
                           className="overflow-hidden"
                         >
                           <div className="px-6 pb-6 pt-0">
-                            <div className="h-px bg-gradient-to-r from-orange-200 to-transparent mb-4"></div>
+                            <div className="h-px bg-gradient-to-r from-blue-200 to-transparent mb-4"></div>
                             <p className="text-gray-700 leading-relaxed">
                               {faq.answer}
                             </p>
@@ -220,7 +220,7 @@ export default function FAQPage() {
               animate={{ opacity: 1 }}
               className="text-center py-12"
             >
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-orange-100">
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-blue-100">
                 <HelpCircle className="mx-auto h-12 w-12 text-gray-400 mb-4" />
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">No FAQs found</h3>
                 <p className="text-gray-600">
@@ -233,7 +233,7 @@ export default function FAQPage() {
       </div>
 
       {/* Contact Support Section */}
-      <div className="bg-gradient-to-r from-[#8B4513] to-amber-700 py-16">
+      <div className="bg-gradient-to-r from-blue-600 to-blue-700 py-16">
         <div className="container mx-auto px-4 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -244,19 +244,19 @@ export default function FAQPage() {
             <h2 className="text-3xl font-bold text-white mb-4">
               Still have questions?
             </h2>
-            <p className="text-orange-100 text-lg mb-8 max-w-2xl mx-auto">
+            <p className="text-blue-100 text-lg mb-8 max-w-2xl mx-auto">
               Can't find the answer you're looking for? Our support team is here to help you 24/7
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
                 href="/contact"
-                className="px-8 py-4 bg-white text-[#8B4513] font-semibold rounded-xl hover:bg-orange-50 transition-colors duration-200 shadow-lg"
+                className="px-8 py-4 bg-white text-blue-600 font-semibold rounded-xl hover:bg-blue-50 transition-colors duration-200 shadow-lg"
               >
                 Contact Support
               </a>
               <a
                 href="mailto:info@preproots.com"
-                className="px-8 py-4 bg-transparent border-2 border-white text-white font-semibold rounded-xl hover:bg-white hover:text-[#8B4513] transition-colors duration-200"
+                className="px-8 py-4 bg-transparent border-2 border-white text-white font-semibold rounded-xl hover:bg-white hover:text-blue-600 transition-colors duration-200"
               >
                 Email Us
               </a>

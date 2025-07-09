@@ -95,7 +95,7 @@ export default function SimplePDFViewer({ url, title }: SimplePDFViewerProps) {
         <div className="flex space-x-2">
           <button
             onClick={handleDownload}
-            className="flex items-center px-3 py-1 bg-[#FF6B38] text-white rounded-md text-sm hover:bg-opacity-90"
+            className="flex items-center px-3 py-1 bg-[#2563eb] text-white rounded-md text-sm hover:bg-opacity-90"
           >
             <Download className="h-4 w-4 mr-1" />
             Download
@@ -115,7 +115,7 @@ export default function SimplePDFViewer({ url, title }: SimplePDFViewerProps) {
         {isLoading && (
           <div className="absolute inset-0 flex items-center justify-center bg-gray-100 z-10">
             <div className="text-center">
-              <div className="w-10 h-10 border-4 border-t-[#FF6B38] border-gray-200 rounded-full animate-spin mb-2"></div>
+              <div className="w-10 h-10 border-4 border-t-[#2563eb] border-gray-200 rounded-full animate-spin mb-2"></div>
               <p className="text-gray-600 text-sm">Loading PDF...</p>
             </div>
           </div>
@@ -130,7 +130,7 @@ export default function SimplePDFViewer({ url, title }: SimplePDFViewerProps) {
               <div className="flex flex-col space-y-2">
                 <button
                   onClick={openInNewTab}
-                  className="px-4 py-2 bg-[#FF6B38] text-white rounded-md hover:bg-opacity-90 text-sm"
+                  className="px-4 py-2 bg-[#2563eb] text-white rounded-md hover:bg-opacity-90 text-sm"
                 >
                   Open in New Tab
                 </button>

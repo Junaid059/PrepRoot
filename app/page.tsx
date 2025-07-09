@@ -120,19 +120,19 @@ export default function Home() {
   // Sample feature data
   const features = [
     {
-      icon: <BookOpen className="h-8 w-8 text-[#FF6B38]" />,
+      icon: <BookOpen className="h-8 w-8 text-blue-600" />,
       title: 'Expert Instructors',
       description:
         'Learn from industry experts who are passionate about teaching and sharing their knowledge.',
     },
     {
-      icon: <Clock className="h-8 w-8 text-[#FF6B38]" />,
+      icon: <Clock className="h-8 w-8 text-blue-600" />,
       title: 'Flexible Learning',
       description:
         'Study at your own pace, access courses anytime, anywhere on any device.',
     },
     {
-      icon: <Users className="h-8 w-8 text-[#FF6B38]" />,
+      icon: <Users className="h-8 w-8 text-blue-600" />,
       title: 'Community Support',
       description:
         'Join a community of learners and get support from peers and instructors.',
@@ -170,14 +170,14 @@ export default function Home() {
       <section
         className="py-12 md:py-20 mt-16 px-6 md:px-20 relative"
         style={{
-          background: 'linear-gradient(135deg, #fff3ec 0%, #ffe6d0 100%)',
+          background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)',
         }}
       >
         <div className="container mx-auto px-4 md:px-6">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12">
             {/* Left Content */}
             <div className="space-y-6 animate-fadeIn lg:w-1/2">
-              <div className="inline-block bg-[#FF6B38]/10 text-[#6694d8] px-4 py-1 rounded-full text-sm font-medium">
+              <div className="inline-block bg-blue-100 text-blue-600 px-4 py-1 rounded-full text-sm font-medium">
                 eLearning Platform
               </div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
@@ -185,7 +185,7 @@ export default function Home() {
                 <br />
                 Deeper & More
                 <br />
-                <span className="text-[#FF6B38]">-Amazing</span>
+                <span className="text-blue-600">-Amazing</span>
               </h1>
               <p className="text-gray-600 max-w-md">
                 Plus/Purposefully display unique intellectual capital without
@@ -195,7 +195,7 @@ export default function Home() {
               <div className="flex items-center space-x-4">
                 <Link
                   href="/signup"
-                  className="bg-[#2BBEB4] text-white px-6 py-3 rounded-full font-medium flex items-center hover:bg-opacity-90 transition-all transform hover:scale-105"
+                  className="bg-blue-500 text-white px-6 py-3 rounded-full font-medium flex items-center hover:bg-blue-600 transition-all transform hover:scale-105"
                 >
                   Start Free Trial
                   <svg
@@ -213,7 +213,7 @@ export default function Home() {
                 </Link>
                 <Link
                   href="/how-it-works"
-                  className="bg-[#FF6B38] text-white h-12 w-12 rounded-full flex items-center justify-center hover:bg-opacity-90 transition-all transform hover:scale-105"
+                  className="bg-blue-600 text-white h-12 w-12 rounded-full flex items-center justify-center hover:bg-blue-700 transition-all transform hover:scale-105"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -235,8 +235,8 @@ export default function Home() {
             {/* Right Image */}
             <div className="relative animate-slideIn lg:w-1/2 flex justify-center">
               <div className="absolute -z-10 top-0 right-0 w-3/4 h-3/4">
-                <div className="absolute top-10 right-10 w-64 h-64 bg-[#2BBEB4] rotate-12 animate-float"></div>
-                <div className="absolute top-40 right-20 w-48 h-48 bg-[#649fbd] rotate-45 animate-float delay-300"></div>
+              <div className="absolute top-10 right-10 w-64 h-64 bg-blue-500 rotate-12 animate-float"></div>
+                <div className="absolute top-40 right-20 w-48 h-48 bg-blue-400 rotate-45 animate-float delay-300"></div>
               </div>
               <Image
                 src="/design.png"
@@ -247,16 +247,16 @@ export default function Home() {
                 priority
               />
               <div className="absolute top-10 left-0 bg-white rounded-full p-2 shadow-lg animate-bounce">
-                <div className="h-8 w-8 bg-[#7f98dc] rounded-full flex items-center justify-center text-white font-bold">
+                <div className="h-8 w-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
                   P
                 </div>
               </div>
               <div className="absolute top-1/4 right-0 bg-white rounded-full p-2 shadow-lg animate-pulse">
-                <div className="h-8 w-8 bg-[#2BBEB4] rounded-full"></div>
+                <div className="h-8 w-8 bg-blue-500 rounded-full"></div>
               </div>
               <div className="absolute bottom-1/3 left-10 bg-white rounded-full p-2 shadow-lg animate-bounce delay-300">
                 <div className="h-10 w-10 rounded-full flex items-center justify-center">
-                  <div className="h-8 w-8 bg-[#FF6B38]/20 rounded-full"></div>
+                  <div className="h-8 w-8 bg-blue-200 rounded-full"></div>
                 </div>
               </div>
             </div>
@@ -275,12 +275,12 @@ export default function Home() {
 
       {/* About Section */}
       <section className="container mx-auto px-4 md:px-6 py-16 text-center">
-        <div className="inline-block bg-[#2BBEB4]/10 text-[#2BBEB4] px-4 py-1 rounded-full text-sm font-medium mb-6">
+        <div className="inline-block bg-blue-100 text-blue-600 px-4 py-1 rounded-full text-sm font-medium mb-6">
           ABOUT US
         </div>
         <h2 className="text-2xl md:text-3xl font-bold max-w-3xl mx-auto">
           We are passionate about empowering learners{' '}
-          <span className="text-[#2BBEB4]">Worldwide</span> with high-quality,
+          <span className="text-blue-600">Worldwide</span> with high-quality,
           accessible & engaging education. Our mission offering a diverse range
           of courses.
         </h2>
@@ -290,7 +290,7 @@ export default function Home() {
       <section className="container mx-auto px-4 md:px-6 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
           <div className="space-y-2 p-6 hover:shadow-lg rounded-xl transition-all transform hover:scale-105">
-            <h3 className="text-5xl font-bold text-[#FF6B38]">25+</h3>
+            <h3 className="text-5xl font-bold text-blue-600">25+</h3>
             <p className="text-gray-600 text-sm">
               Years of eLearning
               <br />
@@ -298,7 +298,7 @@ export default function Home() {
             </p>
           </div>
           <div className="space-y-2 p-6 hover:shadow-lg rounded-xl transition-all transform hover:scale-105">
-            <h3 className="text-5xl font-bold text-[#FF6B38]">56k</h3>
+            <h3 className="text-5xl font-bold text-blue-600">56k</h3>
             <p className="text-gray-600 text-sm">
               Students Enrolled In
               <br />
@@ -306,7 +306,7 @@ export default function Home() {
             </p>
           </div>
           <div className="space-y-2 p-6 hover:shadow-lg rounded-xl transition-all transform hover:scale-105">
-            <h3 className="text-5xl font-bold text-[#FF6B38]">170+</h3>
+            <h3 className="text-5xl font-bold text-blue-600">170+</h3>
             <p className="text-gray-600 text-sm">
               Experienced Teacher's
               <br />
@@ -320,7 +320,7 @@ export default function Home() {
       <section className="container mx-auto px-4 md:px-6 py-16">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
           <div>
-            <div className="inline-block bg-[#FF6B38]/10 text-[#FF6B38] px-4 py-1 rounded-full text-sm font-medium mb-4">
+            <div className="inline-block bg-blue-100 text-blue-600 px-4 py-1 rounded-full text-sm font-medium mb-4">
               COURSES
             </div>
             <h2 className="text-3xl md:text-4xl font-bold">
@@ -338,7 +338,7 @@ export default function Home() {
                   placeholder="Search Courses"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-4 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B38]"
+                  className="pl-4 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
                 />
                 <button className="absolute right-3 top-1/2 transform -translate-y-1/2">
                   <Search className="h-5 w-5 text-gray-400" />
@@ -381,7 +381,7 @@ export default function Home() {
               </div>
               <button
                 type="submit"
-                className="bg-[#FF6B38] text-white p-2 rounded-lg hover:bg-opacity-90 transition-all"
+                className="bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 transition-all"
               >
                 <Search className="h-5 w-5" />
               </button>
@@ -431,7 +431,7 @@ export default function Home() {
         <div className="text-center mt-10">
           <Link
             href="/explore"
-            className="inline-block bg-[#FF6B38]/10 text-[#FF6B38] px-6 py-3 rounded-full font-medium hover:bg-[#FF6B38]/20 transition-all"
+            className="inline-block bg-blue-100 text-blue-600 px-6 py-3 rounded-full font-medium hover:bg-blue-200 transition-all"
           >
             View All Courses
           </Link>
@@ -442,7 +442,7 @@ export default function Home() {
       <section className="bg-gray-50 py-20">
         <div className="container mx-auto px-4 md:px-6">
           <div className="text-center mb-12">
-            <div className="inline-block bg-[#FF6B38]/10 text-[#FF6B38] px-4 py-1 rounded-full text-sm font-medium mb-4">
+            <div className="inline-block bg-blue-100 text-blue-600 px-4 py-1 rounded-full text-sm font-medium mb-4">
               WHY CHOOSE US
             </div>
             <h2 className="text-3xl md:text-4xl font-bold">
@@ -456,7 +456,7 @@ export default function Home() {
                 key={index}
                 className="bg-white p-8 rounded-xl shadow-md hover:shadow-xl transition-all transform hover:scale-105"
               >
-                <div className="bg-[#FF6B38]/10 p-3 rounded-full w-fit mb-4">
+                <div className="bg-blue-100 p-3 rounded-full w-fit mb-4">
                   {feature.icon}
                 </div>
                 <h3 className="text-xl font-bold mb-3">{feature.title}</h3>
@@ -470,7 +470,7 @@ export default function Home() {
       {/* Testimonials */}
       <section className="container mx-auto px-4 md:px-6 py-20">
         <div className="text-center mb-12">
-          <div className="inline-block bg-[#2BBEB4]/10 text-[#2BBEB4] px-4 py-1 rounded-full text-sm font-medium mb-4">
+          <div className="inline-block bg-blue-100 text-blue-600 px-4 py-1 rounded-full text-sm font-medium mb-4">
             TESTIMONIALS
           </div>
           <h2 className="text-3xl md:text-4xl font-bold">
@@ -512,7 +512,7 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="bg-[#FF6B38]/10 py-20">
+      <section className="bg-blue-100 py-20">
         <div className="container mx-auto px-4 md:px-6 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
             Ready to Start Your Learning Journey?
@@ -523,7 +523,7 @@ export default function Home() {
           </p>
           <Link
             href="/signup"
-            className="bg-[#FF6B38] text-white px-8 py-4 rounded-full font-medium inline-block hover:bg-opacity-90 transition-all transform hover:scale-105"
+            className="bg-blue-600 text-white px-8 py-4 rounded-full font-medium inline-block hover:bg-blue-700 transition-all transform hover:scale-105"
           >
             Get Started Now
           </Link>

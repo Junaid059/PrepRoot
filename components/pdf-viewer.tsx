@@ -175,7 +175,7 @@ export default function PDFViewer({ pdfUrl, title, isEnrolled, isFreePreview }: 
                 <p className="text-gray-600 mb-4">Your browser doesn't support PDF embedding</p>
                 <button
                   onClick={openInNewTab}
-                  className="px-4 py-2 bg-[#FF6B38] text-white rounded-md hover:bg-opacity-90"
+                  className="px-4 py-2 bg-[#2563eb] text-white rounded-md hover:bg-opacity-90"
                 >
                   Open PDF in New Tab
                 </button>
@@ -193,7 +193,7 @@ export default function PDFViewer({ pdfUrl, title, isEnrolled, isFreePreview }: 
         <div className="flex space-x-2">
           <button
             onClick={handleDownload}
-            className="flex items-center px-3 py-1 bg-[#FF6B38] text-white rounded-md hover:bg-opacity-90 transition-colors text-sm"
+            className="flex items-center px-3 py-1 bg-[#2563eb] text-white rounded-md hover:bg-opacity-90 transition-colors text-sm"
           >
             <Download className="h-4 w-4 mr-1" />
             Download PDF
@@ -212,7 +212,7 @@ export default function PDFViewer({ pdfUrl, title, isEnrolled, isFreePreview }: 
         {isLoading && (
           <div className="absolute inset-0 flex items-center justify-center bg-gray-100 z-10">
             <div className="text-center">
-              <div className="w-12 h-12 border-4 border-t-[#FF6B38] border-gray-200 rounded-full animate-spin mb-4"></div>
+              <div className="w-12 h-12 border-4 border-t-[#2563eb] border-gray-200 rounded-full animate-spin mb-4"></div>
               <p className="text-gray-600">Loading PDF...</p>
             </div>
           </div>

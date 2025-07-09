@@ -286,7 +286,7 @@ export default function ExplorePage() {
                   placeholder="Search for courses..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full py-3 pl-12 pr-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  className="w-full py-3 pl-12 pr-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
               </div>
@@ -300,7 +300,7 @@ export default function ExplorePage() {
                 <Filter className="h-5 w-5 mr-2" />
                 Filters
                 {hasActiveFilters && (
-                  <span className="ml-2 px-2 py-1 bg-teal-100 text-teal-800 text-xs rounded-full">
+                  <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
                     Active
                   </span>
                 )}
@@ -321,7 +321,7 @@ export default function ExplorePage() {
                 <h3 className="text-lg font-medium text-gray-900">Filters</h3>
                 <button
                   onClick={handleClearFilters}
-                  className="text-sm text-teal-600 hover:text-teal-700 flex items-center"
+                  className="text-sm text-blue-600 hover:text-blue-700 flex items-center"
                 >
                   <X className="h-4 w-4 mr-1" />
                   Clear all filters
@@ -341,7 +341,7 @@ export default function ExplorePage() {
                             id={`category-${category}`}
                             checked={selectedCategory === category}
                             onChange={() => handleCategoryChange(category)}
-                            className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
+                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                           />
                           <label htmlFor={`category-${category}`} className="ml-2 text-sm text-gray-700">
                             {category}
@@ -433,7 +433,7 @@ export default function ExplorePage() {
                 id="sort"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="py-2 px-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                className="py-2 px-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 disabled={isLoading}
               >
                 <option value="popular">Most Popular</option>
@@ -467,7 +467,7 @@ export default function ExplorePage() {
               </div>
               <button
                 onClick={handleRetry}
-                className="px-6 py-3 bg-teal-600 text-white rounded-lg font-medium hover:bg-teal-700 transition-colors"
+                className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
               >
                 Try Again
               </button>
@@ -492,7 +492,7 @@ export default function ExplorePage() {
                 </div>
                 <button
                   onClick={handleClearFilters}
-                  className="px-6 py-3 bg-teal-600 text-white rounded-lg font-medium hover:bg-teal-700 transition-colors"
+                  className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
                 >
                   Clear Filters
                 </button>

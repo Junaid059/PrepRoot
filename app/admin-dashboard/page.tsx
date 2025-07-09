@@ -6,6 +6,7 @@ import { motion } from "framer-motion"
 import TeachersPanel from "@/components/admin/teachers-panel"
 import CoursesPanel from "@/components/admin/courses-panel"
 import SectionsPanel from "@/components/admin/section-panel"
+import ContactsPanel from "@/components/admin/contacts-panel"
 import AdminNavbar from "@/components/admin/admin-navbar"
 import {
   Users,
@@ -217,7 +218,7 @@ export default function CompleteAdminDashboard() {
 
       {/* Dashboard Tabs */}
       <div className="flex flex-wrap gap-4 mb-8">
-        {["overview", "students", "courses", "sections", "teachers", "enrollments"].map((tab) => (
+        {["overview", "students", "courses", "sections", "teachers", "enrollments", "contacts"].map((tab) => (
           <motion.button
             key={tab}
             onClick={() => setActiveTab(tab)}
@@ -244,6 +245,11 @@ export default function CompleteAdminDashboard() {
                 <Layers className="h-4 w-4 mr-2" />
                 <span>Sections</span>
               </div>
+            ) : tab === "contacts" ? (
+              <div className="flex items-center">
+                <Mail className="h-4 w-4 mr-2" />
+                <span>Contacts</span>
+              </div>
             ) : (
               tab.charAt(0).toUpperCase() + tab.slice(1)
             )}
@@ -265,6 +271,7 @@ export default function CompleteAdminDashboard() {
         {activeTab === "sections" && <SectionsPanel />}
         {activeTab === "teachers" && <TeachersPanel />}
         {activeTab === "enrollments" && <EnrollmentsPanel />}
+        {activeTab === "contacts" && <ContactsPanel />}
       </div>
     </div>
     </>

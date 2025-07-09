@@ -187,7 +187,7 @@ export default function ProfilePage() {
   if (loading || authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="w-16 h-16 border-4 border-t-[#8B4513] border-gray-200 rounded-full animate-spin"></div>
+        <div className="w-16 h-16 border-4 border-t-[#2563eb] border-gray-200 rounded-full animate-spin"></div>
       </div>
     )
   }
@@ -198,7 +198,7 @@ export default function ProfilePage() {
         <div className="flex items-center mb-8">
           <button
             onClick={() => user?.isAdmin ? router.push('/admin-dashboard') : router.back()}
-            className="flex items-center text-gray-600 hover:text-[#8B4513] mr-4"
+            className="flex items-center text-gray-600 hover:text-[#2563eb] mr-4"
           >
             <ArrowLeft className="h-4 w-4 mr-1" />
             {user?.isAdmin ? 'Back to Dashboard' : 'Back'}
@@ -219,14 +219,14 @@ export default function ProfilePage() {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full bg-[#F5DEB3] flex items-center justify-center">
-                      <User className="h-20 w-20 text-[#8B4513]" />
+                    <div className="w-full h-full bg-blue-100 flex items-center justify-center">
+                      <User className="h-20 w-20 text-[#2563eb]" />
                     </div>
                   )}
                 </div>
                 <label
                   htmlFor="profile-image"
-                  className="absolute bottom-0 right-0 w-10 h-10 rounded-full bg-[#8B4513] flex items-center justify-center cursor-pointer shadow-md hover:bg-[#6B3100] transition-colors"
+                  className="absolute bottom-0 right-0 w-10 h-10 rounded-full bg-[#2563eb] flex items-center justify-center cursor-pointer shadow-md hover:bg-[#1d4ed8] transition-colors"
                 >
                   <Camera className="h-5 w-5 text-white" />
                   <input
@@ -249,7 +249,7 @@ export default function ProfilePage() {
                   onClick={() => setActiveTab("info")}
                   className={`w-full py-3 px-4 rounded-lg flex items-center text-left ${
                     activeTab === "info"
-                      ? "bg-[#F5DEB3] text-[#8B4513]"
+                      ? "bg-blue-100 text-[#2563eb]"
                       : "bg-white text-gray-700 hover:bg-gray-100"
                   }`}
                 >
@@ -260,7 +260,7 @@ export default function ProfilePage() {
                   onClick={() => setActiveTab("security")}
                   className={`w-full py-3 px-4 rounded-lg flex items-center text-left ${
                     activeTab === "security"
-                      ? "bg-[#F5DEB3] text-[#8B4513]"
+                      ? "bg-blue-100 text-[#2563eb]"
                       : "bg-white text-gray-700 hover:bg-gray-100"
                   }`}
                 >
@@ -293,7 +293,7 @@ export default function ProfilePage() {
                           name="name"
                           value={formData.name}
                           onChange={handleInputChange}
-                          className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8B4513]"
+                          className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2563eb]"
                           placeholder="Your full name"
                         />
                       </div>
@@ -308,7 +308,7 @@ export default function ProfilePage() {
                             name="firstName"
                             value={formData.firstName}
                             onChange={handleInputChange}
-                            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8B4513]"
+                            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2563eb]"
                             placeholder="First name"
                           />
                         </div>
@@ -321,7 +321,7 @@ export default function ProfilePage() {
                             name="lastName"
                             value={formData.lastName}
                             onChange={handleInputChange}
-                            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8B4513]"
+                            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2563eb]"
                             placeholder="Last name"
                           />
                         </div>
@@ -346,7 +346,7 @@ export default function ProfilePage() {
                       <button
                         type="submit"
                         disabled={saving}
-                        className="w-full sm:w-auto px-6 py-2 bg-[#8B4513] text-white rounded-lg flex items-center justify-center hover:bg-[#6B3100] transition-colors disabled:bg-gray-400"
+                        className="w-full sm:w-auto px-6 py-2 bg-[#2563eb] text-white rounded-lg flex items-center justify-center hover:bg-[#1d4ed8] transition-colors disabled:bg-gray-400"
                       >
                         {saving ? (
                           <>
@@ -382,7 +382,7 @@ export default function ProfilePage() {
                           name="currentPassword"
                           value={formData.currentPassword}
                           onChange={handleInputChange}
-                          className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8B4513]"
+                          className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2563eb]"
                           placeholder="Enter your current password"
                           required
                         />
@@ -397,7 +397,7 @@ export default function ProfilePage() {
                           name="newPassword"
                           value={formData.newPassword}
                           onChange={handleInputChange}
-                          className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8B4513]"
+                          className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2563eb]"
                           placeholder="Enter new password"
                           minLength={6}
                           required
@@ -413,7 +413,7 @@ export default function ProfilePage() {
                           name="confirmPassword"
                           value={formData.confirmPassword}
                           onChange={handleInputChange}
-                          className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8B4513]"
+                          className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2563eb]"
                           placeholder="Confirm new password"
                           minLength={6}
                           required
@@ -423,7 +423,7 @@ export default function ProfilePage() {
                       <button
                         type="submit"
                         disabled={saving}
-                        className="w-full sm:w-auto px-6 py-2 bg-[#8B4513] text-white rounded-lg flex items-center justify-center hover:bg-[#6B3100] transition-colors disabled:bg-gray-400"
+                        className="w-full sm:w-auto px-6 py-2 bg-[#2563eb] text-white rounded-lg flex items-center justify-center hover:bg-[#1d4ed8] transition-colors disabled:bg-gray-400"
                       >
                         {saving ? (
                           <>

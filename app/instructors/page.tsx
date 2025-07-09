@@ -56,9 +56,9 @@ export default function InstructorsPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="bg-[#FF6B38]/10 py-20">
+      <section className="bg-blue-100 py-20">
         <div className="container mx-auto px-4 md:px-6 text-center">
-          <div className="inline-block bg-[#FF6B38]/20 text-[#FF6B38] px-4 py-1 rounded-full text-sm font-medium mb-4">
+          <div className="inline-block bg-blue-200 text-blue-600 px-4 py-1 rounded-full text-sm font-medium mb-4">
             OUR INSTRUCTORS
           </div>
           <h1 className="text-4xl md:text-5xl font-bold mb-6">
@@ -76,7 +76,7 @@ export default function InstructorsPage() {
                 placeholder="Search instructors..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-4 pr-10 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#FF6B38]"
+                className="w-full pl-4 pr-10 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-600"
               />
               <button className="absolute right-3 top-1/2 transform -translate-y-1/2">
                 <Search className="h-5 w-5 text-gray-400" />
@@ -136,7 +136,7 @@ export default function InstructorsPage() {
                   </div>
                   <div className="p-6">
                     <h3 className="text-xl font-bold mb-1">{teacher.name}</h3>
-                    <p className="text-[#FF6B38] font-medium mb-2">
+                    <p className="text-blue-600 font-medium mb-2">
                       {teacher.designation}
                     </p>
                     <p className="text-gray-600 text-sm mb-3">
@@ -160,7 +160,7 @@ export default function InstructorsPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="bg-[#2BBEB4]/10 py-16">
+      <section className="bg-blue-100 py-16">
         <div className="container mx-auto px-4 md:px-6 text-center">
           <h2 className="text-3xl font-bold mb-6">
             Want to Join Our Teaching Team?
@@ -172,7 +172,7 @@ export default function InstructorsPage() {
           </p>
           <Link
             href="/become-instructor"
-            className="bg-[#2BBEB4] text-white px-8 py-3 rounded-full font-medium inline-block hover:bg-opacity-90 transition-all transform hover:scale-105"
+            className="bg-blue-600 text-white px-8 py-3 rounded-full font-medium inline-block hover:bg-blue-700 transition-all transform hover:scale-105"
           >
             Become an Instructor
           </Link>
