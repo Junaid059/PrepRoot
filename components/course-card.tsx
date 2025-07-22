@@ -63,7 +63,7 @@ export default function CourseCard({ course, index }: CourseCardProps) {
           </div>
           <div className="flex justify-end items-center">
             <span className="text-[#3b82f6] font-bold text-lg">
-              ${course.price || '49.99'}
+              {Number(course.price) === 0 ? 'Free' : `PKR ${Number(course.price).toLocaleString()}`}
             </span>
           </div>
         </div>

@@ -317,6 +317,7 @@ export default function CoursePage() {
         }
 
         setCourse(courseData.course)
+        console.log("Course price:", courseData.course.price, "Type:", typeof courseData.course.price);
 
         if (courseData.course.instructor) {
           const instructorId =
@@ -423,27 +424,68 @@ export default function CoursePage() {
 
     try {
       setIsProcessingPayment(true)
-      const response = await fetch("/api/payment/create-checkout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          courseId,
-          amount: course.price,
-          courseName: course.title,
-        }),
-      })
+      
+      // Check if the course is free
+      if (course.price === 0) {
+        console.log('Enrolling in free course:', { courseId, coursePrice: course.price, userId: user.id });
+        
+        // For free courses, directly call the enrollment API
+        const enrollResponse = await fetch('/api/enrollments', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            courseId,
+            amount: 0,
+          }),
+        });
 
-      if (!response.ok) {
-        throw new Error("Failed to create checkout session")
+        console.log('Free course enrollment response status:', enrollResponse.status);
+
+        if (!enrollResponse.ok) {
+          const errorData = await enrollResponse.json().catch(() => ({}));
+          console.error('Free course enrollment failed:', errorData);
+          
+          // If already enrolled, don't treat as an error
+          if (enrollResponse.status === 409) {
+            setIsEnrolled(true);
+            toast.success('You are already enrolled in this course');
+            setIsProcessingPayment(false);
+            return;
+          }
+          throw new Error(errorData.message || 'Failed to enroll in course');
+        }
+
+        const enrollmentResult = await enrollResponse.json();
+        console.log('Free course enrollment successful:', enrollmentResult);
+        setIsEnrolled(true);
+        toast.success('Successfully enrolled in the free course!');
+        setIsProcessingPayment(false);
+      } else {
+        // For paid courses, create Stripe checkout session
+        const response = await fetch("/api/payment/create-checkout", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            courseId,
+            amount: course.price,
+            courseName: course.title,
+          }),
+        })
+
+        if (!response.ok) {
+          throw new Error("Failed to create checkout session")
+        }
+
+        const { url } = await response.json()
+        window.location.href = url
       }
-
-      const { url } = await response.json()
-      window.location.href = url
     } catch (error) {
-      console.error("Error creating checkout session:", error)
-      toast.error("Failed to start payment process")
+      console.error("Error during enrollment process:", error)
+      toast.error(course.price === 0 ? 'Failed to enroll in free course' : 'Failed to start payment process')
       setIsProcessingPayment(false)
     }
   }
@@ -1168,7 +1210,7 @@ export default function CoursePage() {
               <div className="p-6">
                 <div className="flex items-center justify-between mb-6">
                   <span className="text-3xl font-bold text-gray-900">
-                    PKR {course.price?.toLocaleString() || "49,999"}
+                    {course.price === 0 ? 'Free' : `PKR ${course.price?.toLocaleString() || "49,999"}`}
                   </span>
                   {course.originalPrice && (
                     <span className="text-lg text-gray-500 line-through">
@@ -1197,8 +1239,17 @@ export default function CoursePage() {
                       </>
                     ) : (
                       <>
-                        <CreditCard className="h-4 w-4 mr-2" />
-                        Enroll Now
+                        {course.price === 0 ? (
+                          <>
+                            <CheckCircle className="h-4 w-4 mr-2" />
+                            Enroll for Free
+                          </>
+                        ) : (
+                          <>
+                            <CreditCard className="h-4 w-4 mr-2" />
+                            Enroll Now
+                          </>
+                        )}
                       </>
                     )}
                   </motion.button>

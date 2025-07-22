@@ -33,9 +33,15 @@ export default function CourseEnrollmentButton({
     } else {
       setIsLoading(false);
     }
-  }, [courseId, isAdmin]);
+  }, [courseId, isAdmin, user]);
 
   const checkEnrollmentStatus = async () => {
+    // Only check enrollment status if user is authenticated
+    if (!user) {
+      setIsLoading(false);
+      return;
+    }
+
     try {
       setIsLoading(true);
       const response = await fetch(
@@ -45,6 +51,11 @@ export default function CourseEnrollmentButton({
       if (response.ok) {
         const data = await response.json();
         setIsEnrolled(data.isEnrolled);
+      } else if (response.status === 401) {
+        // User not authenticated, that's ok for checking enrollment
+        console.log('User not authenticated for enrollment check');
+      } else {
+        console.error('Error checking enrollment status:', response.status);
       }
     } catch (error) {
       console.error('Error checking enrollment status:', error);
@@ -54,11 +65,21 @@ export default function CourseEnrollmentButton({
   };
 
   const handleEnrollment = async () => {
+    // Check if user is authenticated first
+    if (!user) {
+      toast.error('Please log in to enroll in this course');
+      // Redirect to login page
+      window.location.href = `/login?redirect=/courses/${courseId}`;
+      return;
+    }
+
     try {
       setIsProcessing(true);
 
       // If course is free (price is zero), enroll directly without payment
       if (coursePrice === 0) {
+        console.log('Enrolling in free course:', { courseId, userId: user.id });
+        
         // Call enrollment API directly
         const response = await fetch('/api/enrollments', {
           method: 'POST',
@@ -71,16 +92,33 @@ export default function CourseEnrollmentButton({
           }),
         });
 
+        console.log('Enrollment response status:', response.status);
+        
         if (!response.ok) {
-          throw new Error('Failed to enroll in course');
+          const errorData = await response.json().catch(() => ({}));
+          console.error('Enrollment failed:', errorData);
+          
+          // Handle specific error cases
+          if (response.status === 401) {
+            toast.error('Please log in to enroll in this course');
+            window.location.href = `/login?redirect=/courses/${courseId}`;
+            return;
+          } else if (response.status === 409) {
+            // Already enrolled
+            setIsEnrolled(true);
+            toast.success('You are already enrolled in this course!');
+            return;
+          } else {
+            throw new Error(errorData.message || 'Failed to enroll in course');
+          }
         }
 
         const enrollmentResult = await response.json();
+        console.log('Enrollment successful:', enrollmentResult);
         
         // Update enrollment status
         setIsEnrolled(true);
-        toast.success('Successfully enrolled in the course!');
-        setIsProcessing(false);
+        toast.success('Successfully enrolled in the free course!');
       } else {
         // For paid courses, create Stripe checkout session
         const response = await fetch('/api/payment/create-checkout', {
@@ -107,6 +145,7 @@ export default function CourseEnrollmentButton({
     } catch (error) {
       console.error('Error during enrollment process:', error);
       toast.error(coursePrice === 0 ? 'Failed to enroll in course' : 'Failed to start payment process');
+    } finally {
       setIsProcessing(false);
     }
   };

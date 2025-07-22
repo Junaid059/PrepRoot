@@ -15,11 +15,11 @@ interface Course {
   instructorName: string
   thumbnail?: string | File
   sections?: number
-  lectures?: number
   enrollments?: number
   revenue?: string
   trend?: number
   createdAt?: string
+  lectures?: number
 }
 
 interface Category {
@@ -44,6 +44,9 @@ export default function CoursesPanel() {
     instructorName: "",
     thumbnail: "",
   })
+  
+  const [isFreeCourse, setIsFreeCourse] = useState<boolean>(false)
+  const [isEditingFreeCourse, setIsEditingFreeCourse] = useState<boolean>(false)
 
   // Add state for categories
   const [categories, setCategories] = useState<Category[]>([])
@@ -125,6 +128,10 @@ export default function CoursesPanel() {
       formData.append("price", editingCourse.price.toString())
       formData.append("category", editingCourse.category)
       formData.append("instructorName", editingCourse.instructorName)
+      
+      // Add instructor ID - this is required by the API
+      // Using a default instructor ID for the admin
+      formData.append("instructor", "64c9d290c63931f42effe891")
 
       if (editingCourse.thumbnail instanceof File) {
         formData.append("thumbnail", editingCourse.thumbnail)
@@ -158,6 +165,10 @@ export default function CoursesPanel() {
       formData.append("price", newCourse.price.toString())
       formData.append("category", newCourse.category)
       formData.append("instructorName", newCourse.instructorName)
+      
+      // Add instructor ID - this is required by the API
+      // Using a default instructor ID for the admin
+      formData.append("instructor", "64c9d290c63931f42effe891")
 
       if (newCourse.thumbnail instanceof File) {
         formData.append("thumbnail", newCourse.thumbnail)
@@ -311,7 +322,10 @@ export default function CoursesPanel() {
 
                       <div className="flex justify-end mt-4">
                         <button
-                          onClick={() => setEditingCourse(course)}
+                          onClick={() => {
+                            setEditingCourse(course);
+                            setIsEditingFreeCourse(course.price === 0);
+                          }}
                           className="flex items-center px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-300 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors mr-2"
                         >
                           <Edit className="h-4 w-4 mr-1" />
@@ -375,30 +389,28 @@ export default function CoursesPanel() {
 
                 <div>
                   <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Category</label>
-                  {categoriesLoading ? (
-                    <div className="w-full h-10 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-                  ) : (
-                    <select
-                      value={editingCourse?.category || ""}
-                      onChange={(e) =>
-                        setEditingCourse({
-                          ...editingCourse,
-                          category: e.target.value,
-                        })
-                      }
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-900 text-gray-800 dark:text-white"
-                      required
-                    >
-                      <option value="" disabled>
-                        Select a category
-                      </option>
-                      {categories.map((category) => (
-                        <option key={category.name} value={category.name}>
-                          {`${category.icon} ${category.name} (${category.count} courses)`}
-                        </option>
-                      ))}
-                    </select>
-                  )}
+                  <select
+                    value={editingCourse?.category || ""}
+                    onChange={(e) =>
+                      setEditingCourse({
+                        ...editingCourse,
+                        category: e.target.value,
+                      })
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-900 text-gray-800 dark:text-white"
+                    required
+                  >
+                    <option value="" disabled>
+                      Select a category
+                    </option>
+                    <option value="Web Development">Web Development</option>
+                    <option value="Data Science">Data Science</option>
+                    <option value="Business">Business</option>
+                    <option value="Design">Design</option>
+                    <option value="Marketing">Marketing</option>
+                    <option value="Photography">Photography</option>
+                    <option value="Other">Other</option>
+                  </select>
                 </div>
 
                 <div>
@@ -421,9 +433,29 @@ export default function CoursesPanel() {
 
                 <div>
                   <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Price (PKR)</label>
+                  <div className="flex items-center mb-2">
+                    <input
+                      type="checkbox"
+                      id="editFreeCourse"
+                      checked={isEditingFreeCourse}
+                      onChange={(e) => {
+                        setIsEditingFreeCourse(e.target.checked);
+                        if (e.target.checked) {
+                          setEditingCourse({
+                            ...editingCourse,
+                            price: 0,
+                          });
+                        }
+                      }}
+                      className="mr-2 h-4 w-4"
+                    />
+                    <label htmlFor="editFreeCourse" className="text-sm text-gray-700 dark:text-gray-300">
+                      This is a free course
+                    </label>
+                  </div>
                   <input
                     type="number"
-                    value={editingCourse?.price || 0}
+                    value={isEditingFreeCourse ? 0 : (editingCourse?.price || 0)}
                     onChange={(e) =>
                       setEditingCourse({
                         ...editingCourse,
@@ -434,7 +466,13 @@ export default function CoursesPanel() {
                     required
                     min="0"
                     step="0.01"
+                    disabled={isEditingFreeCourse}
                   />
+                  {isEditingFreeCourse && (
+                    <p className="text-xs text-blue-500 mt-1">
+                      Course will be available for free enrollment
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -538,25 +576,23 @@ export default function CoursesPanel() {
 
                 <div>
                   <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Category</label>
-                  {categoriesLoading ? (
-                    <div className="w-full h-10 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-                  ) : (
-                    <select
-                      value={newCourse.category}
-                      onChange={(e) => setNewCourse({ ...newCourse, category: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-900 text-gray-800 dark:text-white"
-                      required
-                    >
-                      <option value="" disabled>
-                        Select a category
-                      </option>
-                      {categories.map((category) => (
-                        <option key={category.name} value={category.name}>
-                          {`${category.icon} ${category.name} (${category.count} courses)`}
-                        </option>
-                      ))}
-                    </select>
-                  )}
+                  <select
+                    value={newCourse.category}
+                    onChange={(e) => setNewCourse({ ...newCourse, category: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-900 text-gray-800 dark:text-white"
+                    required
+                  >
+                    <option value="" disabled>
+                      Select a category
+                    </option>
+                    <option value="Web Development">Web Development</option>
+                    <option value="Data Science">Data Science</option>
+                    <option value="Business">Business</option>
+                    <option value="Design">Design</option>
+                    <option value="Marketing">Marketing</option>
+                    <option value="Photography">Photography</option>
+                    <option value="Other">Other</option>
+                  </select>
                 </div>
 
                 <div>
@@ -579,9 +615,29 @@ export default function CoursesPanel() {
 
                 <div>
                   <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Price (PKR)</label>
+                  <div className="flex items-center mb-2">
+                    <input
+                      type="checkbox"
+                      id="freeCourse"
+                      checked={isFreeCourse}
+                      onChange={(e) => {
+                        setIsFreeCourse(e.target.checked);
+                        if (e.target.checked) {
+                          setNewCourse({
+                            ...newCourse,
+                            price: 0,
+                          });
+                        }
+                      }}
+                      className="mr-2 h-4 w-4"
+                    />
+                    <label htmlFor="freeCourse" className="text-sm text-gray-700 dark:text-gray-300">
+                      This is a free course
+                    </label>
+                  </div>
                   <input
                     type="number"
-                    value={newCourse.price === 0 ? "" : newCourse.price}
+                    value={isFreeCourse ? 0 : (newCourse.price === 0 ? "" : newCourse.price)}
                     onChange={(e) =>
                       setNewCourse({
                         ...newCourse,
@@ -593,7 +649,13 @@ export default function CoursesPanel() {
                     step="0.01"
                     placeholder="Enter price"
                     required
+                    disabled={isFreeCourse}
                   />
+                  {isFreeCourse && (
+                    <p className="text-xs text-blue-500 mt-1">
+                      Course will be available for free enrollment
+                    </p>
+                  )}
                 </div>
 
                 <div>
